@@ -1,0 +1,13 @@
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Main.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Service/UpdateHandler.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Model/DatabaseTest.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Service/Keyboard.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Model/Task.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Bot/Authentification/AuthController.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Service/MessageSender.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Model/DatabaseConnector.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Model/Database.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Controller/BotController.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Model/User.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Bot/Authentification/AuthHandler.java
+/home/Dah9/IdeaProjects/Bot-Task-Tracker/src/main/java/TelegramBot/Bot/Authentification/AuthService.java
