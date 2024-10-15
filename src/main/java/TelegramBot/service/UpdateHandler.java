@@ -1,11 +1,14 @@
 package TelegramBot.service;
 
+import TelegramBot.Bot.authentification.AuthService;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class UpdateHandler {
     private final Keyboard keyboard = new Keyboard();
     private final MessageSender messageSender;
+
+    private final AuthService authService;
 
     public UpdateHandler(TelegramLongPollingBot bot) {
         this.messageSender = new MessageSender(bot);
