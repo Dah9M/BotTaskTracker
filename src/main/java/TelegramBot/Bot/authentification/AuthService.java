@@ -1,6 +1,6 @@
 package TelegramBot.Bot.authentification;
 
-import TelegramBot.model.Database;
+import TelegramBot.model.UserRepository;
 import TelegramBot.model.User;
 
 import java.sql.SQLException;
@@ -9,39 +9,40 @@ import java.sql.SQLException;
 // но все команды должен дёргать из вспомогательных классов
 
 public class AuthService {
-    private final Database database;
+    private final UserRepository database;
 
 
-    public AuthService(Database database) {
+    public AuthService(UserRepository database) {
         this.database = database;
     }
 
     public String registerUser(Long chatId, String username, String password) {
+
+        if (!isValidUsername(username) || !isValidPassword(password)) {
+            return "Невалидные символы для имени или пароля";
+        }
+
         try {
-            if (database.existUser(chatId)) {
-                return "Вы уже зарегистрированы!";
-            } else if (!isValidUsername(username) || !isValidPassword(password)) {
-                return "Неправильное имя пользователя или пароль";
-            } else {
-                User user = new User(chatId, username, password);
-                database.addUser(user);
-                return  "Регистрация прошла успешно!";
+            if (database.getUserByChatId(chatId) != null) {
+                return "Пользователь уже зарегистрирован";
             }
+
+            User user = new User(chatId, username, password);
+            database.registerUser(user);
+            return "Пользователь успешно зарегистрирован!";
+
         } catch (SQLException e) {
             e.printStackTrace();
-            return "Ошибка регистрации. Попробуйте ещё раз";
+            return "Ошибка регистрации";
         }
     }
 
-    public String authorizeUser(Long chatId, String username, String password) {
+    public String authorizeUser(Long chatId, String password) {
         try {
-
-            if (database.getUserById(chatId).isAuthorized()) {
-                return "Вы уже авторизованы";
-            } else if (database.authorizeUser(chatId, username, password)) {
-                return "Вы успешно авторизованы!";
+            if (database.authentificateUser(chatId, password)) {
+                return "Вы успешно авторизованы";
             } else {
-                return "Неверное имя пользователя или пароль";
+                return "Неверное пароль";
             }
         } catch (SQLException e) {
             e.printStackTrace();

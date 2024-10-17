@@ -6,13 +6,14 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class BotController extends TelegramLongPollingBot {
 
     private final UpdateHandler updateHandler;
 
-    public BotController() {
+    public BotController() throws SQLException {
         this.updateHandler = new UpdateHandler(this);
     }
 

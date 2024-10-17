@@ -14,7 +14,7 @@ public class User {
         this.isAuthorized = false;
     }
 
-    public Long getId() { return chatId; }
+    public Long getChatId() { return chatId; }
     public String getUsername() { return username; }
     public String getPassword() { return password; }
     public boolean isAuthorized() { return isAuthorized; }
