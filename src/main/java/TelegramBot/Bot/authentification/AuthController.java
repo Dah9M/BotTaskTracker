@@ -9,15 +9,8 @@ public class AuthController {
         this.authService = authService;
     }
 
-    public SendMessage registerCommand(Long chatId, String username, String password) {
-        String message = authService.registerUser(chatId, username, password);
-
-        return new SendMessage(String.valueOf(chatId), message);
-    }
-
-    public SendMessage authorizeCommand(Long chatId,String password) {
-        String message = authService.authorizeUser(chatId, password);
-
+    public SendMessage registerCommand(Long chatId) {
+        String message = authService.registerUser(chatId);
         return new SendMessage(String.valueOf(chatId), message);
     }
 }

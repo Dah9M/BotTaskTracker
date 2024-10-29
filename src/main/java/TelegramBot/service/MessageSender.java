@@ -5,7 +5,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-
 public class MessageSender {
     private final TelegramLongPollingBot bot;
 
@@ -23,7 +22,6 @@ public class MessageSender {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-
     }
 
     public void sendReplyMarkup(Long chatId, InlineKeyboardMarkup keyboard, String messageText) {
@@ -39,3 +37,4 @@ public class MessageSender {
         }
     }
 }
+

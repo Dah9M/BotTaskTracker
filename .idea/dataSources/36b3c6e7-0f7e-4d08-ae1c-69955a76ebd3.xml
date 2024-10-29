@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="postgres@localhost">
-  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.52">
+  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>dmy</DateStyle>
       <Grants>16384||-9223372036854775808|c|G
@@ -7617,11 +7617,11 @@ TimeZone=UTC</Config>
       <OwnerName>pg_database_owner</OwnerName>
     </schema>
     <sequence id="510" parent="509" name="users_id_seq">
-      <DasType>integer|0s</DasType>
       <ObjectId>16414</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
       <StateNumber>773</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <OwnerName>bot_user</OwnerName>
     </sequence>
     <table id="511" parent="509" name="users">
@@ -7631,33 +7631,33 @@ TimeZone=UTC</Config>
       <OwnerName>bot_user</OwnerName>
     </table>
     <column id="512" parent="511" name="id">
-      <DasType>integer|0s</DasType>
       <DefaultExpression>nextval(&apos;users_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>773</StateNumber>
+      <StoredType>integer|0s</StoredType>
       <SequenceId>16414</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="513" parent="511" name="chat_id">
-      <DasType>bigint|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>773</StateNumber>
+      <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
     <column id="514" parent="511" name="username">
-      <DasType>varchar(50)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>773</StateNumber>
+      <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="515" parent="511" name="password">
-      <DasType>varchar(255)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>773</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <index id="516" parent="511" name="users_pkey">
