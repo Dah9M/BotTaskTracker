@@ -14,15 +14,10 @@ public class Keyboard {
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
         List<InlineKeyboardButton> row1 = new ArrayList<>();
-        InlineKeyboardButton authButton = new InlineKeyboardButton();
-        authButton.setText("Авторизоваться");
-        authButton.setCallbackData("auth");
-
         InlineKeyboardButton registerButton = new InlineKeyboardButton();
         registerButton.setText("Зарегистрироваться");
         registerButton.setCallbackData("register");
 
-        row1.add(authButton);
         row1.add(registerButton);
         rowsInline.add(row1);
 
@@ -30,5 +25,4 @@ public class Keyboard {
 
         return startMenu;
     }
-
 }
