@@ -1,6 +1,7 @@
 package TelegramBot.controller;
 
 import TelegramBot.service.UpdateHandler;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -29,17 +30,7 @@ public class BotController extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        Properties properties = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("bot.properties")) {
-            if (input == null) {
-                System.err.println("Unable to find telegram.properties");
-                return null;
-            }
-            properties.load(input);
-            return properties.getProperty("bot.token");
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        Dotenv dotenv = Dotenv.load();
+        return dotenv.get("BOT_TOKEN");
     }
 }
