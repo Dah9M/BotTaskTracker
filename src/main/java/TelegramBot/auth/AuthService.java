@@ -1,4 +1,4 @@
-package TelegramBot.Bot.authentification;
+package TelegramBot.auth;
 
 import TelegramBot.model.UserRepository;
 import TelegramBot.model.User;
@@ -14,16 +14,16 @@ public class AuthService {
     public String registerUser(Long chatId) {
         try {
             if (database.getUserByChatId(chatId) != null) {
-                return "Вы уже зарегистрированы.";
+                return "You've already registered.";
             }
 
             User user = new User(chatId);
             database.registerUser(user);
-            return "Вы успешно зарегистрированы!";
+            return "Registration successful!";
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return "Ошибка регистрации.";
+            return "Registration error.";
         }
     }
 }

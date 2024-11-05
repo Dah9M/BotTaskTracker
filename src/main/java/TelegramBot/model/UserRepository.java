@@ -29,7 +29,7 @@ public class UserRepository {
             ResultSet result = statement.executeQuery();
 
             if (result.next()) {
-                return new User(result.getLong("chat_id"));
+                return new User(result.getLong("chatid"));
             }
 
             return null;

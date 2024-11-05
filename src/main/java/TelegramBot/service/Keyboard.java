@@ -15,7 +15,7 @@ public class Keyboard {
 
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         InlineKeyboardButton registerButton = new InlineKeyboardButton();
-        registerButton.setText("Зарегистрироваться");
+        registerButton.setText("Register");
         registerButton.setCallbackData("register");
 
         row1.add(registerButton);
@@ -24,5 +24,52 @@ public class Keyboard {
         startMenu.setKeyboard(rowsInline);
 
         return startMenu;
+    }
+
+    public InlineKeyboardMarkup setMainKeyboard() {
+        InlineKeyboardMarkup mainMenu = new InlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        InlineKeyboardButton addTaskButton = new InlineKeyboardButton();
+        InlineKeyboardButton updateTaskButton = new InlineKeyboardButton();
+
+        addTaskButton.setText("Add Task");
+        updateTaskButton.setText("Update Task");
+        addTaskButton.setCallbackData("addTask");
+        updateTaskButton.setCallbackData("updateTask");
+
+        row1.add(addTaskButton);
+        row1.add(updateTaskButton);
+
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        InlineKeyboardButton viewTasksButton = new InlineKeyboardButton();
+        InlineKeyboardButton deleteTaskButton = new InlineKeyboardButton();
+
+        viewTasksButton.setText("View Tasks");
+        deleteTaskButton.setText("Delete Task");
+        viewTasksButton.setCallbackData("viewTasks");
+        deleteTaskButton.setCallbackData("deleteTask");
+
+        row2.add(viewTasksButton);
+        row2.add(deleteTaskButton);
+
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+
+        InlineKeyboardButton help = new InlineKeyboardButton();
+
+        help.setText("Help");
+        help.setCallbackData("help");
+
+        row3.add(help);
+
+        rowsInline.add(row1);
+        rowsInline.add(row2);
+        rowsInline.add(row3);
+
+        mainMenu.setKeyboard(rowsInline);
+
+        return mainMenu;
     }
 }

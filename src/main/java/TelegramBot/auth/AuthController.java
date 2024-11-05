@@ -1,4 +1,4 @@
-package TelegramBot.Bot.authentification;
+package TelegramBot.auth;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
