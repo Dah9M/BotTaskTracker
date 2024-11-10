@@ -1,23 +1,15 @@
 package TelegramBot.model;
 
+import lombok.Getter;
+
 public class User {
     private int id;
+    @Getter
     private Long chatId;
-/*    private String username;
-    private String password;
-    private boolean isAuthorized;*/
 
     public User(Long chatId) {
         this.chatId = chatId;
- /*       this.username = username;
-        this.password = password;
-        this.isAuthorized = false;*/
-    }
 
-    public Long getChatId() { return chatId; }
-/*    public String getUsername() { return username; }
-    public String getPassword() { return password; }
-    public boolean isAuthorized() { return isAuthorized; }
-    public void authorize() { this.isAuthorized = true; }*/
+    }
 
 }

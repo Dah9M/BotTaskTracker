@@ -1,23 +1,16 @@
-package TelegramBot.model;
-
-import TelegramBot.task.TaskController;
-import TelegramBot.task.TaskData;
+package TelegramBot.task;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class TaskBuilder {
     private final Map<Long, TaskData> taskDataMap = new HashMap<>();
-    private final TaskController taskController;
-
-    public TaskBuilder(TaskController taskController) {
-        this.taskController = taskController;
-    }
+    private boolean isTaskCompleted = true;
 
     public String startTaskCreation(long chatId) {
-        taskDataMap.put(chatId, new TaskData());
+        taskDataMap.put(chatId, new TaskData(chatId));
+        isTaskCompleted = false;
         return "Please provide a description for the task.";
     }
 
@@ -44,18 +37,24 @@ public class TaskBuilder {
 
             case 2:
                 taskData.setPriority(input);
-                taskData.setChatId(chatId);
-                taskData.setStatus("Pending");
                 taskData.setCreationDate(new Timestamp(System.currentTimeMillis()));
-
-                taskController.addTaskCommand(taskData);
-
-                taskDataMap.remove(chatId);
-                return "Task has been added successfully!";
-
-            default:
-                return "Unexpected error. Please try again.";
+                isTaskCompleted = true;
+                return "All data collected. Saving the task...";
         }
+
+        return "Unexpected error. Please try again.";
+    }
+
+    public boolean isTaskComplete() {
+        return isTaskCompleted;
+    }
+
+    public TaskData getTaskData(long chatId) {
+        return taskDataMap.get(chatId);
+    }
+
+    public void clearTaskData(long chatId) {
+        taskDataMap.remove(chatId);
     }
 
     public boolean isInProgress(long chatId) {

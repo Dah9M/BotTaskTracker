@@ -18,11 +18,9 @@ public class TaskService {
 
         try {
             database.addTask(task);
-
             return "Task added";
         } catch (SQLException e) {
             e.printStackTrace();
-
             return "Error with adding task";
         }
     }
