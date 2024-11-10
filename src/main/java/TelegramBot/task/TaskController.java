@@ -1,24 +1,28 @@
 package TelegramBot.task;
 
-import lombok.Getter;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import TelegramBot.service.MessageSender;
 
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TaskController {
     private final TaskService taskService;
     private final TaskBuilder taskBuilder;
+    private final MessageSender messageSender;
     private final Map<Long, TaskData> taskDataMap = new HashMap<>();
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, MessageSender messageSender) {
         this.taskService = taskService;
         this.taskBuilder = new TaskBuilder();
+        this.messageSender = messageSender;
     }
 
     public String addTaskCommand(Long chatId) {
         return taskBuilder.startTaskCreation(chatId);
+    }
+
+    public void viewTasksCommand(Long chatId, String key) {
+        messageSender.sendTasks(chatId, taskService.viewTasks(chatId, key));
     }
 
     public String handleTaskInput(Long chatId, String input) {

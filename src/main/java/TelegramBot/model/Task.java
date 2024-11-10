@@ -25,4 +25,14 @@ public class Task {
         this.creationDate = creationDate;
     }
 
+    public Task(Long chatId, String description, Timestamp deadline, String priority, String status, Timestamp creationDate) {
+        this.chatId = chatId;
+        this.description = description;
+        this.deadline = deadline;
+        this.priority = priority;
+        this.status = status;
+        this.creationDate = creationDate;
+    }
+
+
 }

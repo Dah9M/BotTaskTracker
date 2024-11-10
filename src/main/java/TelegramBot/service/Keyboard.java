@@ -72,4 +72,43 @@ public class Keyboard {
 
         return mainMenu;
     }
+
+    public InlineKeyboardMarkup setViewTasksKeyboard() {
+        InlineKeyboardMarkup tasksKeyboard = new InlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+        List<InlineKeyboardButton> row4 = new ArrayList<>();
+
+        InlineKeyboardButton allTasksButton = new InlineKeyboardButton();
+        InlineKeyboardButton waitingTasksButton = new InlineKeyboardButton();
+        InlineKeyboardButton activeTasksButton = new InlineKeyboardButton();
+        InlineKeyboardButton completedTasksButton = new InlineKeyboardButton();
+
+        allTasksButton.setText("All Tasks.");
+        allTasksButton.setCallbackData("allTasks");
+        allTasksButton.setText("Waiting Tasks.");
+        allTasksButton.setCallbackData("waitingTasks");
+        allTasksButton.setText("Active Tasks.");
+        allTasksButton.setCallbackData("activeTasks");
+        allTasksButton.setText("Completed Tasks.");
+        allTasksButton.setCallbackData("completedTasks");
+
+        row1.add(allTasksButton);
+        row2.add(waitingTasksButton);
+        row3.add(activeTasksButton);
+        row4.add(completedTasksButton);
+
+        rowsInline.add(row1);
+        rowsInline.add(row2);
+        rowsInline.add(row3);
+        rowsInline.add(row4);
+
+        tasksKeyboard.setKeyboard(rowsInline);
+
+        return tasksKeyboard;
+    }
 }

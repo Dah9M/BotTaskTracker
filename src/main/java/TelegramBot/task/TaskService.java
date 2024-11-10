@@ -5,6 +5,7 @@ import TelegramBot.model.TaskRepository;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
 
 public class TaskService {
     private final TaskRepository database;
@@ -23,5 +24,9 @@ public class TaskService {
             e.printStackTrace();
             return "Error with adding task";
         }
+    }
+
+    public List<Task> viewTasks(Long chatId, String key) {
+        return database.getTasks(chatId, key);
     }
 }

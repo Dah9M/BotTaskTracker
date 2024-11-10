@@ -2,7 +2,6 @@ package TelegramBot.service;
 
 import TelegramBot.auth.AuthController;
 import TelegramBot.model.DatabaseConnector;
-import TelegramBot.task.TaskBuilder;
 import TelegramBot.model.TaskRepository;
 import TelegramBot.model.UserRepository;
 import TelegramBot.task.TaskController;
@@ -25,7 +24,7 @@ public class UpdateHandler {
         AuthService authService = new AuthService(userRepository);
         TaskService taskService = new TaskService(taskRepository);
         this.authController = new AuthController(authService);
-        this.taskController = new TaskController(taskService);
+        this.taskController = new TaskController(taskService, messageSender);
     }
 
     public void updateHandle(Update update) {
@@ -47,13 +46,13 @@ public class UpdateHandler {
             long chatId = update.getCallbackQuery().getMessage().getChatId();
 
             if (callbackData.equals("register")) {
-                String response = authController.registerCommand(chatId).getText();
-                messageSender.sendMessage(chatId, response);
+                messageSender.sendMessage(chatId, authController.registerCommand(chatId).getText());
             } else if (callbackData.equals("addTask")) {
-                String response = taskController.addTaskCommand(chatId);
-                messageSender.sendMessage(chatId, response);
-            } else if (callbackData.equals("updateTask")) {
-
+                messageSender.sendMessage(chatId, taskController.addTaskCommand(chatId));
+            } else if (callbackData.equals("viewTasks")) {
+                messageSender.sendReplyMarkup(chatId, keyboard.setViewTasksKeyboard(), "Tasks:");
+            } else if (callbackData.equals("allTasks") || callbackData.equals("waitingTasks") || callbackData.equals("activeTasks") || callbackData.equals("completedTasks")) {
+                taskController.viewTasksCommand(chatId, callbackData);
             }
         }
     }

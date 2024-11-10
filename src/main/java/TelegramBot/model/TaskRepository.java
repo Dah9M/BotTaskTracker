@@ -1,10 +1,9 @@
 package TelegramBot.model;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TaskRepository {
     private final DatabaseConnector database;
@@ -26,5 +25,48 @@ public class TaskRepository {
 
             return statement.executeUpdate() > 0;
         }
+    }
+
+    public List<Task> getTasks(Long chatId, String key) {
+        List<Task> tasks = new ArrayList<>();
+        String query;
+
+        switch (key) {
+            case "waitingTasks":
+                query = "SELECT * FROM tasks WHERE chat_id = ? AND status = 'Waiting'";
+                break;
+            case "activeTasks":
+                query = "SELECT * FROM tasks WHERE chat_id = ? AND status = 'Active'";
+                break;
+            case "completedTasks":
+                query = "SELECT * FROM tasks WHERE chat_id = ? AND status = 'Completed'";
+                break;
+            case "allTasks":
+            default:
+                query = "SELECT * FROM tasks WHERE chat_id = ?";
+                break;
+        }
+
+        try (Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, chatId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Long id = resultSet.getLong("chat_id");
+                    String description = resultSet.getString("description");
+                    Timestamp deadline = resultSet.getTimestamp("deadline");
+                    String priority = resultSet.getString("priority");
+                    String status = resultSet.getString("status");
+                    Timestamp creationDate = resultSet.getTimestamp("creation_date");
+
+                    Task task = new Task(id, description, deadline, priority, status, creationDate);
+                    tasks.add(task);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return tasks;
     }
 }
