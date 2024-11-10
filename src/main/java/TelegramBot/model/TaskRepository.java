@@ -1,5 +1,7 @@
 package TelegramBot.model;
 
+import TelegramBot.task.TaskData;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,8 +29,8 @@ public class TaskRepository {
         }
     }
 
-    public List<Task> getTasks(Long chatId, String key) {
-        List<Task> tasks = new ArrayList<>();
+    public List<TaskData> getTasks(Long chatId, String key) {
+        List<TaskData> tasks = new ArrayList<>();
         String query;
 
         switch (key) {
@@ -52,14 +54,15 @@ public class TaskRepository {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    Long id = resultSet.getLong("chat_id");
+                    Long dbID = resultSet.getLong("id");
+                    Long chatid = resultSet.getLong("chat_id");
                     String description = resultSet.getString("description");
                     Timestamp deadline = resultSet.getTimestamp("deadline");
                     String priority = resultSet.getString("priority");
                     String status = resultSet.getString("status");
                     Timestamp creationDate = resultSet.getTimestamp("creation_date");
 
-                    Task task = new Task(id, description, deadline, priority, status, creationDate);
+                    TaskData task = new TaskData(dbID, chatid, description, deadline, priority, status, creationDate);
                     tasks.add(task);
                 }
             }
@@ -68,5 +71,28 @@ public class TaskRepository {
         }
 
         return tasks;
+    }
+
+    public <T> String updateTaskField(Long id, String fieldName, T newValue) {
+        String query = "UPDATE tasks SET " + fieldName + " = ? WHERE id = ?";
+
+        try (Connection connection = database.connect();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            if (newValue instanceof String) {
+                statement.setString(1, (String) newValue);
+            } else if (newValue instanceof Timestamp) {
+                statement.setTimestamp(1, (Timestamp) newValue);
+            } else {
+                return "Unsupported data type for field update.";
+            }
+
+            statement.setLong(2, id);
+            statement.executeUpdate();
+            return fieldName + " updated successfully.";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error updating " + fieldName + ".";
+        }
     }
 }

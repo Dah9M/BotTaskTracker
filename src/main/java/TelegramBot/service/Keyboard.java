@@ -90,12 +90,12 @@ public class Keyboard {
 
         allTasksButton.setText("All Tasks.");
         allTasksButton.setCallbackData("allTasks");
-        allTasksButton.setText("Waiting Tasks.");
-        allTasksButton.setCallbackData("waitingTasks");
-        allTasksButton.setText("Active Tasks.");
-        allTasksButton.setCallbackData("activeTasks");
-        allTasksButton.setText("Completed Tasks.");
-        allTasksButton.setCallbackData("completedTasks");
+        waitingTasksButton.setText("Waiting Tasks.");
+        waitingTasksButton.setCallbackData("waitingTasks");
+        activeTasksButton.setText("Active Tasks.");
+        activeTasksButton.setCallbackData("activeTasks");
+        completedTasksButton.setText("Completed Tasks.");
+        completedTasksButton.setCallbackData("completedTasks");
 
         row1.add(allTasksButton);
         row2.add(waitingTasksButton);

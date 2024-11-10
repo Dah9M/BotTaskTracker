@@ -1,6 +1,7 @@
 package TelegramBot.service;
 
 import TelegramBot.model.Task;
+import TelegramBot.task.TaskData;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -40,7 +41,9 @@ public class MessageSender {
         }
     }
 
-    public void sendTasks(Long chatId, List<Task> taskList) {
+    public void sendTasks(Long chatId, List<TaskData> taskList) {
+        int number = 1;
+
         if (taskList.isEmpty()) {
             sendMessage(chatId, "No tasks found.");
             return;
@@ -48,12 +51,13 @@ public class MessageSender {
 
         StringBuilder messageBuilder = new StringBuilder("Your tasks:\n\n");
 
-        for (Task task : taskList) {
-            messageBuilder.append("• Description: ").append(task.getDescription()).append("\n")
+        for (TaskData task : taskList) {
+            messageBuilder.append(Integer.toString(number)).append("\n").append("  Description: ").append(task.getDescription()).append("\n")
                     .append("  Deadline: ").append(task.getDeadline()).append("\n")
                     .append("  Priority: ").append(task.getPriority()).append("\n")
                     .append("  Status: ").append(task.getStatus()).append("\n")
                     .append("  Created on: ").append(task.getCreationDate()).append("\n\n");
+            number++;
         }
 
         String message = messageBuilder.toString();

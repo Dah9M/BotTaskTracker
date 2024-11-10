@@ -26,7 +26,25 @@ public class TaskService {
         }
     }
 
-    public List<Task> viewTasks(Long chatId, String key) {
+    public List<TaskData> viewTasks(Long chatId, String key) {
         return database.getTasks(chatId, key);
+    }
+
+    public String updateTaskField(Long taskId, String field, String newValue) {
+        switch (field) {
+            case "description":
+                return database.updateTaskField(taskId, field, newValue);
+            case "deadline":
+                try {
+                    Timestamp deadline = Timestamp.valueOf(newValue);
+                    return database.updateTaskField(taskId, field, deadline);
+                } catch (IllegalArgumentException e) {
+                    return "Invalid deadline format. Use YYYY-MM-DD HH:MM:SS.";
+                }
+            case "priority":
+                return database.updateTaskField(taskId, field, newValue);
+            default:
+                return "Invalid field.";
+        }
     }
 }

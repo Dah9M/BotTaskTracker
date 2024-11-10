@@ -35,6 +35,9 @@ public class UpdateHandler {
             if (taskController.isTaskInProgress(chatId)) {
                 String response = taskController.handleTaskInput(chatId, messageText);
                 messageSender.sendMessage(chatId, response);
+            } else if (taskController.isUpdateInProgress(chatId)) {
+                String response = taskController.handleUpdateInput(chatId, messageText);
+                messageSender.sendMessage(chatId, response);
             } else if (messageText.equals("/start")) {
                 messageSender.sendReplyMarkup(chatId, keyboard.setStartKeyboard(), "Welcome! Please, register by clicking the button below.");
             } else if (messageText.equals("/menu")) {
@@ -45,14 +48,29 @@ public class UpdateHandler {
             String callbackData = update.getCallbackQuery().getData();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-            if (callbackData.equals("register")) {
-                messageSender.sendMessage(chatId, authController.registerCommand(chatId).getText());
-            } else if (callbackData.equals("addTask")) {
-                messageSender.sendMessage(chatId, taskController.addTaskCommand(chatId));
-            } else if (callbackData.equals("viewTasks")) {
-                messageSender.sendReplyMarkup(chatId, keyboard.setViewTasksKeyboard(), "Tasks:");
-            } else if (callbackData.equals("allTasks") || callbackData.equals("waitingTasks") || callbackData.equals("activeTasks") || callbackData.equals("completedTasks")) {
-                taskController.viewTasksCommand(chatId, callbackData);
+            switch (callbackData) {
+                case "register":
+                    messageSender.sendMessage(chatId, authController.registerCommand(chatId).getText());
+                    break;
+                case "addTask":
+                    messageSender.sendMessage(chatId, taskController.addTaskCommand(chatId));
+                    break;
+                case "viewTasks":
+                    messageSender.sendReplyMarkup(chatId, keyboard.setViewTasksKeyboard(), "Tasks:");
+                    break;
+                case "allTasks":
+                case "waitingTasks":
+                case "activeTasks":
+                case "completedTasks":
+                    taskController.viewTasksCommand(chatId, callbackData);
+                    break;
+                case "updateTask":
+                    taskController.viewTasksCommand(chatId, "allTasks");
+                    taskController.updateTaskCommand(chatId);
+                    break;
+                default:
+                    messageSender.sendMessage(chatId, "Unknown command.");
+                    break;
             }
         }
     }
