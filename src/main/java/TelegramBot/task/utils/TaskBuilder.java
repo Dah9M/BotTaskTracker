@@ -6,17 +6,17 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TaskBuilder {
+public class TaskBuilder implements TaskOperation {
     private final Map<Long, TaskData> taskDataMap = new HashMap<>();
-    private boolean isTaskCompleted = true;
 
-    public String startTaskCreation(long chatId) {
+    @Override
+    public String startOperation(Long chatId) {
         taskDataMap.put(chatId, new TaskData(chatId));
-        isTaskCompleted = false;
         return "Please provide a description for the task.";
     }
 
-    public String processInput(long chatId, String input) {
+    @Override
+    public String processInput(Long chatId, String input) {
         TaskData taskData = taskDataMap.get(chatId);
         if (taskData == null) {
             return "Task creation process has not started. Please initiate by clicking 'Add Task'.";
@@ -40,22 +40,25 @@ public class TaskBuilder {
             case 2:
                 taskData.setPriority(input);
                 taskData.setCreationDate(new Timestamp(System.currentTimeMillis()));
-                isTaskCompleted = true;
-                return "All data collected. Saving the task...";
-        }
+                return "Task created successfully!";
 
-        return "Unexpected error. Please try again.";
+            default:
+                return "Unexpected input.";
+        }
     }
 
-    public boolean isTaskComplete() {
-        return isTaskCompleted;
+    @Override
+    public boolean isOperationCompleted(Long chatId) {
+        TaskData taskData = taskDataMap.get(chatId);
+        return taskData != null && taskData.getStep() >= 3;
     }
 
     public TaskData getTaskData(long chatId) {
         return taskDataMap.get(chatId);
     }
 
-    public void clearTaskData(long chatId) {
+    @Override
+    public void clearOperationData(Long chatId) {
         taskDataMap.remove(chatId);
     }
 

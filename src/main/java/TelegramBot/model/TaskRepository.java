@@ -14,6 +14,7 @@ public class TaskRepository {
         this.database = database;
     }
 
+    // Добавление новой задачи в базу данных
     public boolean addTask(Task task) throws SQLException {
         String query = "INSERT INTO tasks (chat_id, description, deadline, priority, status, creation_date) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -29,6 +30,7 @@ public class TaskRepository {
         }
     }
 
+    // Получение списка задач по chatId и статусу
     public List<TaskData> getTasks(Long chatId, String key) {
         List<TaskData> tasks = new ArrayList<>();
         String query;
@@ -73,6 +75,7 @@ public class TaskRepository {
         return tasks;
     }
 
+    // Обновление отдельного поля задачи
     public <T> String updateTaskField(long id, String fieldName, T newValue) {
         String query = "UPDATE tasks SET " + fieldName + " = ? WHERE id = ?";
 
@@ -93,6 +96,17 @@ public class TaskRepository {
         } catch (SQLException e) {
             e.printStackTrace();
             return "Error updating " + fieldName + ".";
+        }
+    }
+
+    // Удаление задачи по ID
+    public boolean deleteTask(Long taskId) throws SQLException {
+        String query = "DELETE FROM tasks WHERE id = ?";
+
+        try (Connection connection = database.connect();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, taskId);
+            return statement.executeUpdate() > 0;
         }
     }
 }

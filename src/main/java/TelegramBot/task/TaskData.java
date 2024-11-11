@@ -25,6 +25,7 @@ public class TaskData {
     public TaskData(Long chatId) {
         this.chatId = chatId;
     }
+
     public TaskData(int dbID, Long chatId, String description, Timestamp deadline, String priority, String status, Timestamp creationDate) {
         this.dbID = dbID;
         this.chatId = chatId;
