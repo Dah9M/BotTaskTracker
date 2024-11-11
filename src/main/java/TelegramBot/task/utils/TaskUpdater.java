@@ -1,4 +1,6 @@
-package TelegramBot.task;
+package TelegramBot.task.utils;
+
+import TelegramBot.task.TaskData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +15,7 @@ public class TaskUpdater {
         return "Please provide the ID of the task you want to update.";
     }
 
-    public String processUpdateInput(long chatId, String input) {
+    public String processUpdateInput(Long chatId, String input) {
         TaskData taskData = taskDataMap.get(chatId);
         if (taskData == null) {
             return "Update process has not started. Please initiate by selecting 'Update Task'.";
@@ -22,8 +24,8 @@ public class TaskUpdater {
         switch (taskData.getStep()) {
             case 0:
                 try {
-                    long taskId = Long.parseLong(input);
-                    taskData.setChatId(taskId);
+                    int taskId = Integer.parseInt(input);
+                    taskData.setDbID(taskId);
                     taskData.nextStep();
                     return "Please select the field to update: Description, Deadline, or Priority.";
                 } catch (NumberFormatException e) {

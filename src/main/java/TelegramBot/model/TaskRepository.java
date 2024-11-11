@@ -54,7 +54,7 @@ public class TaskRepository {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    Long dbID = resultSet.getLong("id");
+                    int dbID = resultSet.getInt("id");
                     Long chatid = resultSet.getLong("chat_id");
                     String description = resultSet.getString("description");
                     Timestamp deadline = resultSet.getTimestamp("deadline");
@@ -73,7 +73,7 @@ public class TaskRepository {
         return tasks;
     }
 
-    public <T> String updateTaskField(Long id, String fieldName, T newValue) {
+    public <T> String updateTaskField(long id, String fieldName, T newValue) {
         String query = "UPDATE tasks SET " + fieldName + " = ? WHERE id = ?";
 
         try (Connection connection = database.connect();

@@ -33,11 +33,9 @@ public class UpdateHandler {
             long chatId = update.getMessage().getChatId();
 
             if (taskController.isTaskInProgress(chatId)) {
-                String response = taskController.handleTaskInput(chatId, messageText);
-                messageSender.sendMessage(chatId, response);
+                messageSender.sendMessage(chatId, taskController.handleTaskInput(chatId, messageText));
             } else if (taskController.isUpdateInProgress(chatId)) {
-                String response = taskController.handleUpdateInput(chatId, messageText);
-                messageSender.sendMessage(chatId, response);
+                messageSender.sendMessage(chatId, taskController.handleUpdateInput(chatId, messageText));
             } else if (messageText.equals("/start")) {
                 messageSender.sendReplyMarkup(chatId, keyboard.setStartKeyboard(), "Welcome! Please, register by clicking the button below.");
             } else if (messageText.equals("/menu")) {

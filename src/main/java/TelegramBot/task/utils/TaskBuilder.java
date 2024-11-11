@@ -1,4 +1,6 @@
-package TelegramBot.task;
+package TelegramBot.task.utils;
+
+import TelegramBot.task.TaskData;
 
 import java.sql.Timestamp;
 import java.util.HashMap;

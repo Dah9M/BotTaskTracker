@@ -1,6 +1,8 @@
 package TelegramBot.task;
 
 import TelegramBot.service.MessageSender;
+import TelegramBot.task.utils.TaskBuilder;
+import TelegramBot.task.utils.TaskUpdater;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,12 +46,12 @@ public class TaskController {
         return message;
     }
 
-    public String handleUpdateInput(Long chatId, String input) {
-        String response = taskUpdater.processUpdateInput(chatId, input);
+    public String handleUpdateInput(Long chatId, String taskId) {
+        String response = taskUpdater.processUpdateInput(chatId, taskId);
 
         if (taskUpdater.isUpdateComplete()) {
             TaskData updatedTaskData = taskUpdater.getTaskData(chatId);
-            taskService.updateTaskField(updatedTaskData.getChatId(), updatedTaskData.getSelectedField(), updatedTaskData.getNewValue());
+            taskService.updateTaskField(updatedTaskData.getChatId(), updatedTaskData.getDbID(), updatedTaskData.getSelectedField(), updatedTaskData.getNewValue());
             taskUpdater.clearTaskData(chatId);
             response = "Task updated successfully!";
         }
@@ -63,4 +65,5 @@ public class TaskController {
     public boolean isUpdateInProgress(Long chatId) {
         return taskUpdater.isInProgress(chatId);
     }
+
 }

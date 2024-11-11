@@ -5,6 +5,7 @@ import TelegramBot.model.TaskRepository;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TaskService {
@@ -30,19 +31,22 @@ public class TaskService {
         return database.getTasks(chatId, key);
     }
 
-    public String updateTaskField(Long taskId, String field, String newValue) {
+    public String updateTaskField(Long chatId, int dbID, String field, String newValue) {
+        List<TaskData> tasks = database.getTasks(chatId, "allTasks");
+        TaskData task = tasks.get(dbID);
+        long trueId = task.getDbID();
         switch (field) {
             case "description":
-                return database.updateTaskField(taskId, field, newValue);
+                return database.updateTaskField(trueId, field, newValue);
             case "deadline":
                 try {
                     Timestamp deadline = Timestamp.valueOf(newValue);
-                    return database.updateTaskField(taskId, field, deadline);
+                    return database.updateTaskField(trueId, field, deadline);
                 } catch (IllegalArgumentException e) {
                     return "Invalid deadline format. Use YYYY-MM-DD HH:MM:SS.";
                 }
             case "priority":
-                return database.updateTaskField(taskId, field, newValue);
+                return database.updateTaskField(trueId, field, newValue);
             default:
                 return "Invalid field.";
         }
