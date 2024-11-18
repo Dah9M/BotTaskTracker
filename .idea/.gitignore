@@ -3,3 +3,5 @@
 /workspace.xml
 .idea/dataSources.local.xml
 .idea/dataSources/
+src/resources/bot.properties
+
