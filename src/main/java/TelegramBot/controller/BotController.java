@@ -6,14 +6,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Properties;
 
 public class BotController extends TelegramLongPollingBot {
-
     private final UpdateHandler updateHandler;
 
-    public BotController() throws SQLException {
+    public BotController() {
         this.updateHandler = new UpdateHandler(this);
     }
 
@@ -32,7 +30,7 @@ public class BotController extends TelegramLongPollingBot {
         Properties properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("bot.properties")) {
             if (input == null) {
-                System.err.println("Unable to find telegram.properties");
+                System.err.println("Unable to find bot.properties");
                 return null;
             }
             properties.load(input);

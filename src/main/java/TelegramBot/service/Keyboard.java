@@ -7,22 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Keyboard {
-
     public InlineKeyboardMarkup setStartKeyboard() {
-        InlineKeyboardMarkup startMenu = new InlineKeyboardMarkup();
-
+        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        List<InlineKeyboardButton> rowInline = new ArrayList<>();
         InlineKeyboardButton registerButton = new InlineKeyboardButton();
-        registerButton.setText("Зарегистрироваться");
+        registerButton.setText("Регистрация");
         registerButton.setCallbackData("register");
+        rowInline.add(registerButton);
 
-        row1.add(registerButton);
-        rowsInline.add(row1);
+        rowsInline.add(rowInline);
 
-        startMenu.setKeyboard(rowsInline);
+        markupInline.setKeyboard(rowsInline);
 
-        return startMenu;
+        return markupInline;
     }
+
 }

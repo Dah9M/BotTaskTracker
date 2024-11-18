@@ -6,35 +6,40 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserRepository {
-    private final DatabaseConnector database;
+    private static UserRepository instance;
+    private final DatabaseConnector databaseConnector;
 
-    public UserRepository(DatabaseConnector database) {
-        this.database = database;
+    private UserRepository(DatabaseConnector databaseConnector) {
+        this.databaseConnector = databaseConnector;
     }
 
-    public boolean registerUser(User user) throws SQLException {
-        String query = "INSERT INTO users (chat_id) VALUES (?)";
-
-        try (Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setLong(1, user.getChatId());
-            return statement.executeUpdate() > 0;
+    public static synchronized UserRepository getInstance(DatabaseConnector databaseConnector) {
+        if (instance == null) {
+            instance = new UserRepository(databaseConnector);
         }
+        return instance;
     }
 
     public User getUserByChatId(Long chatId) throws SQLException {
+        Connection connection = databaseConnector.getConnection();
         String query = "SELECT * FROM users WHERE chat_id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setLong(1, chatId);
+        ResultSet resultSet = statement.executeQuery();
 
-        try (Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setLong(1, chatId);
-            ResultSet result = statement.executeQuery();
-
-            if (result.next()) {
-                return new User(result.getLong("chat_id"));
-            }
-
-            return null;
+        if (resultSet.next()) {
+            // Предполагая, что у вас есть конструктор User с соответствующими параметрами
+            return new User(resultSet.getLong("chat_id"));
         }
+        return null;
     }
+
+    public void registerUser(User user) throws SQLException {
+        Connection connection = databaseConnector.getConnection();
+        String query = "INSERT INTO users (chat_id) VALUES (?)";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setLong(1, user.getChatId());
+        statement.executeUpdate();
+    }
+
 }
-
-

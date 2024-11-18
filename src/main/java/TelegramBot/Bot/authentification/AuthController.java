@@ -13,4 +13,5 @@ public class AuthController {
         String message = authService.registerUser(chatId);
         return new SendMessage(String.valueOf(chatId), message);
     }
+
 }

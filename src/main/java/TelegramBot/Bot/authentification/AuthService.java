@@ -5,20 +5,28 @@ import TelegramBot.model.User;
 import java.sql.SQLException;
 
 public class AuthService {
-    private final UserRepository database;
+    private static AuthService instance;
+    private final UserRepository userRepository;
 
-    public AuthService(UserRepository database) {
-        this.database = database;
+    private AuthService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public static synchronized AuthService getInstance(UserRepository userRepository) {
+        if (instance == null) {
+            instance = new AuthService(userRepository);
+        }
+        return instance;
     }
 
     public String registerUser(Long chatId) {
         try {
-            if (database.getUserByChatId(chatId) != null) {
+            if (userRepository.getUserByChatId(chatId) != null) {
                 return "Вы уже зарегистрированы.";
             }
 
             User user = new User(chatId);
-            database.registerUser(user);
+            userRepository.registerUser(user);
             return "Вы успешно зарегистрированы!";
 
         } catch (SQLException e) {
@@ -26,4 +34,5 @@ public class AuthService {
             return "Ошибка регистрации.";
         }
     }
+
 }
