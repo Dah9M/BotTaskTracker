@@ -14,7 +14,6 @@ public class TaskService {
         this.database = database;
     }
 
-    // Добавление новой задачи в базу данных
     public String addTask(Long chatId, String description, Timestamp deadline, String priority, Timestamp creationDate) {
         Task task = new Task(chatId, description, deadline, priority, creationDate);
         try {
@@ -26,7 +25,6 @@ public class TaskService {
         }
     }
 
-    // Получение задач пользователя с фильтрацией по статусу
     public String getTasksByStatus(Long chatId, String status) {
         List<TaskData> tasks = database.getTasks(chatId, status);
         if (tasks.isEmpty()) {
@@ -39,7 +37,6 @@ public class TaskService {
         return taskList.toString();
     }
 
-    // Обновление поля задачи
     public String updateTaskField(Long chatId, int dbID, String field, String newValue) {
         List<TaskData> tasks = database.getTasks(chatId, "allTasks");
         if (dbID < 0 || dbID >= tasks.size()) {
@@ -65,7 +62,6 @@ public class TaskService {
         }
     }
 
-    // Удаление задачи
     public String deleteTask(Long taskId) {
         try {
             boolean success = database.deleteTask(taskId);
