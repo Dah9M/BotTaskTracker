@@ -46,8 +46,6 @@ public class TaskBuilder implements TaskOperation {
             case 2:
                 taskData.setPriority(input);
                 taskData.setCreationDate(new Timestamp(System.currentTimeMillis()));
-
-                // добавляем таску в бд
                 String result = taskService.addTask(
                         taskData.getChatId(),
                         taskData.getDescription(),
@@ -55,7 +53,6 @@ public class TaskBuilder implements TaskOperation {
                         taskData.getPriority(),
                         taskData.getCreationDate()
                 );
-
                 taskDataMap.remove(chatId);
                 return result;
 

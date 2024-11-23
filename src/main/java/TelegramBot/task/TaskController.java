@@ -58,7 +58,7 @@ public class TaskController {
     // Проверка, находится ли пользователь в процессе добавления задачи
     public boolean isTaskInProgress(Long chatId) {
         TaskOperation taskBuilder = operations.get("create");
-        return taskBuilder.isOperationCompleted(chatId);
+        return ((TaskBuilder) taskBuilder).isInProgress(chatId);
     }
 
     // Проверка, находится ли пользователь в процессе обновления задачи

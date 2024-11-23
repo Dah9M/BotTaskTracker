@@ -62,8 +62,9 @@ public class UpdateHandler {
         });
         commandMap.put("/menu", () ->
                 messageSender.sendReplyMarkup(currentChatId, keyboard.setMainKeyboard(), "Menu"));
-        commandMap.put("addTask", () ->
-                messageSender.sendMessage(currentChatId, taskController.addTaskCommand(currentChatId)));
+        commandMap.put("addTask", () -> {
+            String response = taskController.addTaskCommand(currentChatId);
+            messageSender.sendMessage(currentChatId, response);});
         commandMap.put("updateTask", () -> {
             taskController.viewTasksCommand(currentChatId, "allTasks");
             messageSender.sendMessage(currentChatId, taskController.updateTaskCommand(currentChatId));
@@ -164,7 +165,6 @@ public class UpdateHandler {
             }
         }
     }
-
 
     private void handleCallbackQuery(Update update) {
         currentChatId = update.getCallbackQuery().getMessage().getChatId();
