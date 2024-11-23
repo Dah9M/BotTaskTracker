@@ -102,17 +102,29 @@ public class UpdateHandler {
 
         // жоска обновляем таску (одну! выбранную!)
         callbackMap.put("updateTask", () -> {
-            // выводим все таски и даем выбор что обновлять
-            taskController.viewTasksCommand(currentChatId, "allTasks");
-            String response = taskController.updateTaskCommand(currentChatId);
-            messageSender.sendMessage(currentChatId, response);
+            // проверка есть ли таски у типочка
+            if (taskController.hasTasks(currentChatId)) {
+                taskController.viewTasksCommand(currentChatId, "allTasks");
+                String response = taskController.updateTaskCommand(currentChatId);
+                messageSender.sendMessage(currentChatId, response);
+            } else {
+                // тасок нет, пошел он на... со своими исправлениями
+                messageSender.sendMessage(currentChatId, "No tasks found.");
+            }
         });
 
         // удаление таски
         callbackMap.put("deleteTask", () -> {
-            String response = taskController.deleteTaskCommand(currentChatId);
-            messageSender.sendMessage(currentChatId, response);
+            // проверка, есть ли таски у типочка
+            if (taskController.hasTasks(currentChatId)) {
+                String response = taskController.deleteTaskCommand(currentChatId);
+                messageSender.sendMessage(currentChatId, response);
+            } else {
+                // тасок нет, пошел он на... со своими удалениями
+                messageSender.sendMessage(currentChatId, "No tasks found.");
+            }
         });
+
 
         // помощь (тебе, немощному)
         callbackMap.put("help", () -> {
@@ -138,9 +150,11 @@ public class UpdateHandler {
         currentInput = update.getMessage().getText();
 
         if (taskController.isTaskInProgress(currentChatId)) {
-            messageSender.sendMessage(currentChatId, taskController.handleTaskInput(currentChatId, currentInput));
+            String response = taskController.handleTaskInput(currentChatId, currentInput);
+            messageSender.sendMessage(currentChatId, response);
         } else if (taskController.isUpdateInProgress(currentChatId)) {
-            messageSender.sendMessage(currentChatId, taskController.handleUpdateInput(currentChatId, currentInput));
+            String response = taskController.handleUpdateInput(currentChatId, currentInput);
+            messageSender.sendMessage(currentChatId, response);
         } else {
             Runnable command = commandMap.get(currentInput);
             if (command != null) {
@@ -150,6 +164,7 @@ public class UpdateHandler {
             }
         }
     }
+
 
     private void handleCallbackQuery(Update update) {
         currentChatId = update.getCallbackQuery().getMessage().getChatId();

@@ -1,6 +1,7 @@
 package TelegramBot.task.utils;
 
 import TelegramBot.task.TaskData;
+import TelegramBot.task.TaskService;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -8,6 +9,11 @@ import java.util.Map;
 
 public class TaskBuilder implements TaskOperation {
     private final Map<Long, TaskData> taskDataMap = new HashMap<>();
+    private final TaskService taskService;
+
+    public TaskBuilder(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
     @Override
     public String startOperation(Long chatId) {
@@ -40,7 +46,18 @@ public class TaskBuilder implements TaskOperation {
             case 2:
                 taskData.setPriority(input);
                 taskData.setCreationDate(new Timestamp(System.currentTimeMillis()));
-                return "Task created successfully!";
+
+                // добавляем таску в бд
+                String result = taskService.addTask(
+                        taskData.getChatId(),
+                        taskData.getDescription(),
+                        taskData.getDeadline(),
+                        taskData.getPriority(),
+                        taskData.getCreationDate()
+                );
+
+                taskDataMap.remove(chatId);
+                return result;
 
             default:
                 return "Unexpected input.";
@@ -51,10 +68,6 @@ public class TaskBuilder implements TaskOperation {
     public boolean isOperationCompleted(Long chatId) {
         TaskData taskData = taskDataMap.get(chatId);
         return taskData != null && taskData.getStep() >= 3;
-    }
-
-    public TaskData getTaskData(long chatId) {
-        return taskDataMap.get(chatId);
     }
 
     @Override

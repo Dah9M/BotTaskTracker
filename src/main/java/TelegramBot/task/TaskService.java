@@ -75,4 +75,9 @@ public class TaskService {
             return "Error while deleting task.";
         }
     }
+
+    // для получения инфы о тасках
+    public List<TaskData> getTasks(Long chatId, String status) {
+        return database.getTasks(chatId, status);
+    }
 }

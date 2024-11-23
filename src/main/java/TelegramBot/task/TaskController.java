@@ -6,6 +6,7 @@ import TelegramBot.task.utils.TaskOperation;
 import TelegramBot.task.utils.TaskRemover;
 import TelegramBot.task.utils.TaskUpdater;
 
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,9 +20,9 @@ public class TaskController {
         this.taskService = taskService;
 
         // Регистрация операций
-        operations.put("create", new TaskBuilder());
-        operations.put("update", new TaskUpdater());
-        operations.put("delete", new TaskRemover());
+        operations.put("create", new TaskBuilder(taskService));
+        operations.put("update", new TaskUpdater(taskService));
+        operations.put("delete", new TaskRemover(taskService));
     }
 
     // Инициализация процесса добавления задачи
@@ -66,10 +67,15 @@ public class TaskController {
         return taskUpdater.isOperationCompleted(chatId);
     }
 
-    // удаление таски
+    // для удаление таски
     public String deleteTaskCommand(Long chatId) {
         TaskOperation taskRemover = operations.get("delete");
         return taskRemover.startOperation(chatId);
     }
 
+    // так надо для проверки есть ли таски
+    public boolean hasTasks(Long chatId) {
+        List<TaskData> tasks = taskService.getTasks(chatId, "allTasks");
+        return !tasks.isEmpty();
+    }
 }

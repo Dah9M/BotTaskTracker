@@ -1,12 +1,18 @@
 package TelegramBot.task.utils;
 
 import TelegramBot.task.TaskData;
+import TelegramBot.task.TaskService;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TaskRemover implements TaskOperation {
     private final Map<Long, TaskData> taskDataMap = new HashMap<>();
+    private final TaskService taskService;
+
+    public TaskRemover(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
     @Override
     public String startOperation(Long chatId) {
@@ -25,8 +31,9 @@ public class TaskRemover implements TaskOperation {
             return "Are you sure you want to delete this task? Type 'yes' to confirm or 'no' to cancel.";
         } else if (taskData.getStep() == 1) {
             if ("yes".equalsIgnoreCase(input)) {
-                taskData.nextStep();
-                return "Task deleted successfully!";
+                String result = taskService.deleteTask((long) taskData.getDbID());
+                taskDataMap.remove(chatId);
+                return result;
             } else {
                 clearOperationData(chatId);
                 return "Task deletion canceled.";

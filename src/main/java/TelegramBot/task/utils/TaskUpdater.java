@@ -1,12 +1,18 @@
 package TelegramBot.task.utils;
 
 import TelegramBot.task.TaskData;
+import TelegramBot.task.TaskService;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TaskUpdater implements TaskOperation {
     private final Map<Long, TaskData> taskDataMap = new HashMap<>();
+    private final TaskService taskService;
+
+    public TaskUpdater(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
     @Override
     public String startOperation(Long chatId) {
@@ -34,26 +40,31 @@ public class TaskUpdater implements TaskOperation {
 
             case 2:
                 taskData.setNewValue(input);
-                taskData.nextStep();
-                return "Updating the task...";
+
+                // обновляем задачу в бд
+                String result = taskService.updateTaskField(
+                        chatId,
+                        taskData.getDbID(),
+                        taskData.getSelectedField(),
+                        taskData.getNewValue()
+                );
+
+                taskDataMap.remove(chatId);
+                return result;
+
+            default:
+                return "Unexpected input.";
         }
-        return "Unexpected error. Please try again.";
     }
 
+    @Override
     public boolean isOperationCompleted(Long chatId) {
         TaskData taskData = taskDataMap.get(chatId);
         return taskData != null && taskData.getStep() >= 3;
     }
 
-    public TaskData getTaskData(long chatId) {
-        return taskDataMap.get(chatId);
-    }
-
+    @Override
     public void clearOperationData(Long chatId) {
         taskDataMap.remove(chatId);
-    }
-
-    public boolean isInProgress(long chatId) {
-        return taskDataMap.containsKey(chatId);
     }
 }
