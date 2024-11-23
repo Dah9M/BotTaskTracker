@@ -39,4 +39,14 @@ public class TaskData {
     public void nextStep() {
         step++;
     }
+
+    @Override
+    public String toString() {
+        return "Task ID: " + dbID +
+                "\nDescription: " + description +
+                "\nDeadline: " + (deadline != null ? deadline.toString() : "No deadline set") +
+                "\nPriority: " + priority +
+                "\nStatus: " + status +
+                "\nCreation Date: " + creationDate;
+    }
 }
