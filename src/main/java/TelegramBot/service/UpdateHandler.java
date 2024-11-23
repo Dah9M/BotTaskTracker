@@ -12,6 +12,7 @@ import TelegramBot.auth.AuthService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.sql.SQLException;
 
 public class UpdateHandler {
     private final Keyboard keyboard = new Keyboard();
@@ -45,8 +46,20 @@ public class UpdateHandler {
 
     private void initializeCommands() {
         // Команды текстовых сообщений
-        commandMap.put("/start", () ->
-                messageSender.sendReplyMarkup(currentChatId, keyboard.setStartKeyboard(), "Welcome! Please, register by clicking the button below."));
+        commandMap.put("/start", () -> {
+            try {
+                if (authController.isUserRegistered(currentChatId)) {
+                    // пользователь зареган, даем меню
+                    messageSender.sendReplyMarkup(currentChatId, keyboard.setMainKeyboard(), "Welcome back! Here is your main menu:");
+                } else {
+                    // пользователь не зареган, даем регу
+                    messageSender.sendReplyMarkup(currentChatId, keyboard.setStartKeyboard(), "Welcome! Please, register by clicking the button below.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                messageSender.sendMessage(currentChatId, "An error occurred while checking registration status.");
+            }
+        });
         commandMap.put("/menu", () ->
                 messageSender.sendReplyMarkup(currentChatId, keyboard.setMainKeyboard(), "Menu"));
         commandMap.put("addTask", () ->
@@ -57,8 +70,19 @@ public class UpdateHandler {
         });
 
         // Callback команды
-        callbackMap.put("register", () ->
-                messageSender.sendMessage(currentChatId, authController.registerCommand(currentChatId).getText()));
+        callbackMap.put("register", () -> {
+            // результат реги
+            String registrationMessage = authController.registerCommand(currentChatId).getText();
+
+            // сообщение с регой
+            messageSender.sendMessage(currentChatId, registrationMessage);
+
+            // если успешная рега, даем менюшку
+            if (registrationMessage.equals("Registration successful!")) {
+                messageSender.sendReplyMarkup(currentChatId, keyboard.setMainKeyboard(), "Here is your main menu:");
+            }
+        });
+
         callbackMap.put("viewTasks", () ->
                 messageSender.sendReplyMarkup(currentChatId, keyboard.setViewTasksKeyboard(), "Tasks:"));
         callbackMap.put("allTasks", () ->
@@ -69,6 +93,36 @@ public class UpdateHandler {
                 taskController.viewTasksCommand(currentChatId, "activeTasks"));
         callbackMap.put("completedTasks", () ->
                 taskController.viewTasksCommand(currentChatId, "completedTasks"));
+
+        // добавление таски
+        callbackMap.put("addTask", () -> {
+            String response = taskController.addTaskCommand(currentChatId);
+            messageSender.sendMessage(currentChatId, response);
+        });
+
+        // жоска обновляем таску (одну! выбранную!)
+        callbackMap.put("updateTask", () -> {
+            // выводим все таски и даем выбор что обновлять
+            taskController.viewTasksCommand(currentChatId, "allTasks");
+            String response = taskController.updateTaskCommand(currentChatId);
+            messageSender.sendMessage(currentChatId, response);
+        });
+
+        // удаление таски
+        callbackMap.put("deleteTask", () -> {
+            String response = taskController.deleteTaskCommand(currentChatId);
+            messageSender.sendMessage(currentChatId, response);
+        });
+
+        // помощь (тебе, немощному)
+        callbackMap.put("help", () -> {
+            String helpMessage = "Here is how you can use the bot:\n" +
+                    "- Add Task: Add a new task.\n" +
+                    "- Update Task: Update an existing task.\n" +
+                    "- Delete Task: Remove a task.\n" +
+                    "- View Tasks: View all your tasks.";
+            messageSender.sendMessage(currentChatId, helpMessage);
+        });
     }
 
     public void updateHandle(Update update) {

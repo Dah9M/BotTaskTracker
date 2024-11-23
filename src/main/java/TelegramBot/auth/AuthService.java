@@ -26,4 +26,9 @@ public class AuthService {
             return "Registration error.";
         }
     }
+
+    // метод для получения пользователя по chatId
+    public User getUserByChatId(Long chatId) throws SQLException {
+        return database.getUserByChatId(chatId);
+    }
 }

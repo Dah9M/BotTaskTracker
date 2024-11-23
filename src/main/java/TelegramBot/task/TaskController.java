@@ -65,4 +65,11 @@ public class TaskController {
         TaskOperation taskUpdater = operations.get("update");
         return taskUpdater.isOperationCompleted(chatId);
     }
+
+    // удаление таски
+    public String deleteTaskCommand(Long chatId) {
+        TaskOperation taskRemover = operations.get("delete");
+        return taskRemover.startOperation(chatId);
+    }
+
 }
