@@ -5,4 +5,6 @@ public interface TaskOperation {
     String processInput(Long chatId, String input);
     boolean isOperationCompleted(Long chatId);
     void clearOperationData(Long chatId);
+    boolean isInProgress(Long chatId); // Добавьте этот метод
 }
+

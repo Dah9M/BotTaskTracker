@@ -40,6 +40,12 @@ public class TaskController {
         return taskUpdater.startOperation(chatId);
     }
 
+    // Инициализация процесса удаления задачи
+    public String deleteTaskCommand(Long chatId) {
+        TaskOperation taskRemover = operations.get("delete");
+        return taskRemover.startOperation(chatId);
+    }
+
     // Отображение всех задач с фильтрацией по статусу
     public void viewTasksCommand(Long chatId, String status) {
         String tasks = taskService.getTasksByStatus(chatId, status);
@@ -58,6 +64,12 @@ public class TaskController {
         return taskUpdater.processInput(chatId, input);
     }
 
+    // Обработка пошагового ввода для удаления задачи
+    public String handleDeleteInput(Long chatId, String input) {
+        TaskOperation taskRemover = operations.get("delete");
+        return taskRemover.processInput(chatId, input);
+    }
+
     // Проверка, находится ли пользователь в процессе добавления задачи
     public boolean isTaskInProgress(Long chatId) {
         TaskOperation taskBuilder = operations.get("create");
@@ -67,16 +79,16 @@ public class TaskController {
     // Проверка, находится ли пользователь в процессе обновления задачи
     public boolean isUpdateInProgress(Long chatId) {
         TaskOperation taskUpdater = operations.get("update");
-        return taskUpdater.isOperationCompleted(chatId);
+        return taskUpdater.isInProgress(chatId);
     }
 
-    // для удаление таски
-    public String deleteTaskCommand(Long chatId) {
+    // Проверка, находится ли пользователь в процессе удаления задачи
+    public boolean isDeleteInProgress(Long chatId) {
         TaskOperation taskRemover = operations.get("delete");
-        return taskRemover.startOperation(chatId);
+        return taskRemover.isInProgress(chatId);
     }
 
-    // так надо для проверки есть ли таски
+    // Проверка наличия задач у пользователя
     public boolean hasTasks(Long chatId) {
         List<TaskData> tasks = taskService.getTasks(chatId, "allTasks");
         return !tasks.isEmpty();

@@ -46,10 +46,8 @@ public class UpdateHandler {
         commandMap.put("/start", () -> {
             try {
                 if (authController.isUserRegistered(currentChatId)) {
-                    // пользователь зареган, даем меню
                     messageSender.sendReplyMarkup(currentChatId, keyboard.setMainKeyboard(), "Welcome back! Here is your main menu:");
                 } else {
-                    // пользователь не зареган, даем регу
                     messageSender.sendReplyMarkup(currentChatId, keyboard.setStartKeyboard(), "Welcome! Please, register by clicking the button below.");
                 }
             } catch (SQLException e) {
@@ -61,21 +59,14 @@ public class UpdateHandler {
                 messageSender.sendReplyMarkup(currentChatId, keyboard.setMainKeyboard(), "Menu"));
         commandMap.put("addTask", () -> {
             String response = taskController.addTaskCommand(currentChatId);
-            messageSender.sendMessage(currentChatId, response);});
-        commandMap.put("updateTask", () -> {
-            taskController.viewTasksCommand(currentChatId, "allTasks");
-            messageSender.sendMessage(currentChatId, taskController.updateTaskCommand(currentChatId));
+            messageSender.sendMessage(currentChatId, response);
         });
 
         // Callback команды
         callbackMap.put("register", () -> {
-            // результат реги
             String registrationMessage = authController.registerCommand(currentChatId).getText();
-
-            // сообщение с регой
             messageSender.sendMessage(currentChatId, registrationMessage);
 
-            // если успешная рега, даем менюшку
             if (registrationMessage.equals("Registration successful!")) {
                 messageSender.sendReplyMarkup(currentChatId, keyboard.setMainKeyboard(), "Here is your main menu:");
             }
@@ -92,39 +83,32 @@ public class UpdateHandler {
         callbackMap.put("completedTasks", () ->
                 taskController.viewTasksCommand(currentChatId, "completedTasks"));
 
-        // добавление таски
         callbackMap.put("addTask", () -> {
             String response = taskController.addTaskCommand(currentChatId);
             messageSender.sendMessage(currentChatId, response);
         });
 
-        // жоска обновляем таску (одну! выбранную!)
+        // Обновление задачи
         callbackMap.put("updateTask", () -> {
-            // проверка есть ли таски у типочка
             if (taskController.hasTasks(currentChatId)) {
                 taskController.viewTasksCommand(currentChatId, "allTasks");
                 String response = taskController.updateTaskCommand(currentChatId);
                 messageSender.sendMessage(currentChatId, response);
             } else {
-                // тасок нет, пошел он на... со своими исправлениями
                 messageSender.sendMessage(currentChatId, "No tasks found.");
             }
         });
 
-        // удаление таски
+        // Удаление задачи
         callbackMap.put("deleteTask", () -> {
-            // проверка, есть ли таски у типочка
             if (taskController.hasTasks(currentChatId)) {
                 String response = taskController.deleteTaskCommand(currentChatId);
                 messageSender.sendMessage(currentChatId, response);
             } else {
-                // тасок нет, пошел он на... со своими удалениями
                 messageSender.sendMessage(currentChatId, "No tasks found.");
             }
         });
 
-
-        // помощь (тебе, немощному)
         callbackMap.put("help", () -> {
             String helpMessage = "Here is how you can use the bot:\n" +
                     "- Add Task: Add a new task.\n" +
@@ -152,6 +136,9 @@ public class UpdateHandler {
             messageSender.sendMessage(currentChatId, response);
         } else if (taskController.isUpdateInProgress(currentChatId)) {
             String response = taskController.handleUpdateInput(currentChatId, currentInput);
+            messageSender.sendMessage(currentChatId, response);
+        } else if (taskController.isDeleteInProgress(currentChatId)) {
+            String response = taskController.handleDeleteInput(currentChatId, currentInput);
             messageSender.sendMessage(currentChatId, response);
         } else {
             Runnable command = commandMap.get(currentInput);
