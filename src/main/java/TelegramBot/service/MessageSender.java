@@ -1,24 +1,30 @@
 package TelegramBot.service;
 
-import TelegramBot.model.Task;
 import TelegramBot.task.TaskData;
+import lombok.Getter;
+import lombok.Setter;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
 
+// экземпляр бота передаётся только сюда
+
 public class MessageSender {
     private final TelegramLongPollingBot bot;
+    @Setter
+    @Getter
+    private Long currentChatId = null;
 
     public MessageSender(TelegramLongPollingBot bot) {
         this.bot = bot;
     }
 
-    public void sendMessage(Long chatId, String message) {
+    public void sendMessage(String message) {
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(String.valueOf(chatId));
+        sendMessage.setChatId(String.valueOf(currentChatId));
         sendMessage.setText(message);
 
         try {
@@ -28,9 +34,9 @@ public class MessageSender {
         }
     }
 
-    public void sendReplyMarkup(Long chatId, InlineKeyboardMarkup keyboard, String messageText) {
+    public void sendReplyMarkup(ReplyKeyboardMarkup keyboard, String messageText) {
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(String.valueOf(chatId));
+        sendMessage.setChatId(String.valueOf(currentChatId));
         sendMessage.setText(messageText);
         sendMessage.setReplyMarkup(keyboard);
 
@@ -41,18 +47,18 @@ public class MessageSender {
         }
     }
 
-    public void sendTasks(Long chatId, List<TaskData> taskList) {
+    public void sendTasks(List<TaskData> taskList) {
         int number = 1;
 
         if (taskList.isEmpty()) {
-            sendMessage(chatId, "No tasks found.");
+            sendMessage("No tasks found.");
             return;
         }
 
         StringBuilder messageBuilder = new StringBuilder("Your tasks:\n\n");
 
         for (TaskData task : taskList) {
-            messageBuilder.append(Integer.toString(number)).append("\n").append("  Description: ").append(task.getDescription()).append("\n")
+            messageBuilder.append(number).append("\n").append("  Description: ").append(task.getDescription()).append("\n")
                     .append("  Deadline: ").append(task.getDeadline()).append("\n")
                     .append("  Priority: ").append(task.getPriority()).append("\n")
                     .append("  Status: ").append(task.getStatus()).append("\n")
@@ -63,19 +69,19 @@ public class MessageSender {
         String message = messageBuilder.toString();
 
         if (message.length() > 4096) {
-            sendLongMessage(chatId, message);
+            sendLongMessage(message);
         } else {
-            sendMessage(chatId, message);
+            sendMessage(message);
         }
     }
 
-    private void sendLongMessage(Long chatId, String message) {
+    private void sendLongMessage(String message) {
         int maxLength = 4096;
         int start = 0;
 
         while (start < message.length()) {
             int end = Math.min(start + maxLength, message.length());
-            sendMessage(chatId, message.substring(start, end));
+            sendMessage(message.substring(start, end));
             start = end;
         }
     }

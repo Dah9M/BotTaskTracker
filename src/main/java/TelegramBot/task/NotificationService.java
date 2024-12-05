@@ -1,5 +1,6 @@
 package TelegramBot.task;
 
+import TelegramBot.model.BotUtils;
 import TelegramBot.model.User;
 import TelegramBot.model.UserRepository;
 import TelegramBot.service.MessageSender;
@@ -14,10 +15,10 @@ public class NotificationService {
     private final MessageSender messageSender;
     private final UserRepository userRepository;
 
-    public NotificationService(TaskService taskService, MessageSender messageSender, UserRepository userRepository) {
+    public NotificationService(TaskService taskService, BotUtils botUtils) {
         this.taskService = taskService;
-        this.messageSender = messageSender;
-        this.userRepository = userRepository;
+        this.messageSender = botUtils.getMessageSender();
+        this.userRepository = botUtils.getUserRepository();
 
         // Запуск планировщика
         startNotificationScheduler();
@@ -48,10 +49,10 @@ public class NotificationService {
                 long timeLeft = task.getDeadline().toInstant().toEpochMilli() - now.toEpochMilli();
 
                 if (timeLeft > 0 && timeLeft <= 10 * 60 * 1000) {
-                    messageSender.sendMessage(chatId, "⏰ Напоминание! До дедлайна задачи '" + task.getDescription() + "' осталось менее 10 минут!");
+                    messageSender.sendMessage("⏰ Напоминание! До дедлайна задачи '" + task.getDescription() + "' осталось менее 10 минут!");
                 } else if (timeLeft <= 0) {
                     if (task.getDeadlineNotificationCount() < 3) {
-                        messageSender.sendMessage(chatId, "❗️ Дедлайн задачи '" + task.getDescription() + "' уже прошёл!");
+                        messageSender.sendMessage("❗️ Дедлайн задачи '" + task.getDescription() + "' уже прошёл!");
                         task.setDeadlineNotificationCount(task.getDeadlineNotificationCount() + 1);
 
                         // Обновляем счетчик в базе данных

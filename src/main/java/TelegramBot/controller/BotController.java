@@ -20,7 +20,7 @@ public class BotController extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        updateHandler.updateHandle(update);
+        updateHandler.handleTextMessage(update);
     }
 
     @Override
