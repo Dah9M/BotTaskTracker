@@ -10,9 +10,9 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import TelegramBot.auth.AuthService;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.sql.SQLException;
 
 public class UpdateHandler {
     private final Keyboard keyboard = new Keyboard();
@@ -20,7 +20,6 @@ public class UpdateHandler {
     private final AuthController authController;
     private final TaskController taskController;
 
-    // Мапы для хранения команд
     private final Map<String, Runnable> commandMap = new HashMap<>();
     private final Map<String, Runnable> callbackMap = new HashMap<>();
 
@@ -30,7 +29,6 @@ public class UpdateHandler {
     public UpdateHandler(TelegramLongPollingBot bot) {
         this.messageSender = new MessageSender(bot);
 
-        // Инициализация зависимостей
         DatabaseConnector databaseConnector = new DatabaseConnector();
         UserRepository userRepository = new UserRepository(databaseConnector);
         TaskRepository taskRepository = new TaskRepository(databaseConnector);
@@ -38,9 +36,8 @@ public class UpdateHandler {
         TaskService taskService = new TaskService(taskRepository);
 
         this.authController = new AuthController(authService);
-        this.taskController = new TaskController(taskService, messageSender);
+        this.taskController = new TaskController(taskService, messageSender, userRepository);
 
-        // Инициализация команд
         initializeCommands();
     }
 

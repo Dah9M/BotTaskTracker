@@ -6,10 +6,19 @@ import TelegramBot.task.TaskService;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
+import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+import java.time.Instant;
 
 public class TaskBuilder implements TaskOperation {
     private final Map<Long, TaskData> taskDataMap = new HashMap<>();
     private final TaskService taskService;
+
+
+
+    private static final ZoneId ZONE_UTC_PLUS_5 = ZoneId.of("UTC+05:00");
 
     public TaskBuilder(TaskService taskService) {
         this.taskService = taskService;
@@ -36,22 +45,35 @@ public class TaskBuilder implements TaskOperation {
 
             case 1:
                 try {
-                    taskData.setDeadline(Timestamp.valueOf(input));
+                    LocalDateTime userInputTime = LocalDateTime.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    ZonedDateTime userDeadlineInZone = userInputTime.atZone(ZONE_UTC_PLUS_5);
+
+                    ZonedDateTime nowInZone = ZonedDateTime.now(ZONE_UTC_PLUS_5);
+                    if (userDeadlineInZone.isBefore(nowInZone)) {
+                        return "The deadline is in the past. Please provide a future date and time.";
+                    }
+
+                    // Конвертация в Timestamp для сохранения
+                    taskData.setDeadline(Timestamp.valueOf(userInputTime));
                     taskData.nextStep();
                     return "Please provide a priority for the task (e.g., High, Medium, Low).";
-                } catch (IllegalArgumentException e) {
+
+                } catch (Exception e) {
                     return "Invalid date format. Please use YYYY-MM-DD HH:MM:SS.";
                 }
 
             case 2:
                 taskData.setPriority(input);
                 taskData.setCreationDate(new Timestamp(System.currentTimeMillis()));
+                taskData.setDeadlineNotificationCount(0); // Инициализируем счетчик
+
                 String result = taskService.addTask(
                         taskData.getChatId(),
                         taskData.getDescription(),
                         taskData.getDeadline(),
                         taskData.getPriority(),
-                        taskData.getCreationDate()
+                        taskData.getCreationDate(),
+                        taskData.getDeadlineNotificationCount()
                 );
                 taskDataMap.remove(chatId);
                 return result;

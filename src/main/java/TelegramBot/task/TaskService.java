@@ -7,15 +7,15 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
+
 public class TaskService {
     private final TaskRepository database;
 
     public TaskService(TaskRepository database) {
         this.database = database;
     }
-
-    public String addTask(Long chatId, String description, Timestamp deadline, String priority, Timestamp creationDate) {
-        Task task = new Task(chatId, description, deadline, priority, creationDate);
+    public String addTask(Long chatId, String description, Timestamp deadline, String priority, Timestamp creationDate, int deadlineNotificationCount) {
+        Task task = new Task(chatId, description, deadline, priority, creationDate, deadlineNotificationCount);
         try {
             database.addTask(task);
             return "Task added successfully!";
@@ -74,6 +74,12 @@ public class TaskService {
 
     // для получения инфы о тасках
     public List<TaskData> getTasks(Long chatId, String status) {
+        if (chatId == null) {
+            throw new IllegalArgumentException("Chat ID cannot be null");
+        }
         return database.getTasks(chatId, status);
+    }
+    public void updateTaskNotificationCount(int taskId, int newCount) {
+        database.updateTaskNotificationCount(taskId, newCount);
     }
 }

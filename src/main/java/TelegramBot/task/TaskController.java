@@ -5,19 +5,22 @@ import TelegramBot.task.utils.TaskBuilder;
 import TelegramBot.task.utils.TaskOperation;
 import TelegramBot.task.utils.TaskRemover;
 import TelegramBot.task.utils.TaskUpdater;
+import TelegramBot.model.UserRepository;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TaskController {
+    private final NotificationService notificationService;
     private final Map<String, TaskOperation> operations = new HashMap<>();
     private final MessageSender messageSender;
     private final TaskService taskService;
 
-    public TaskController(TaskService taskService, MessageSender messageSender) {
+    public TaskController(TaskService taskService, MessageSender messageSender, UserRepository userRepository) {
         this.messageSender = messageSender;
         this.taskService = taskService;
+        this.notificationService = new NotificationService(taskService, messageSender, userRepository);
 
         // Регистрация операций
         operations.put("create", new TaskBuilder(taskService));

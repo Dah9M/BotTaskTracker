@@ -3,7 +3,6 @@ package TelegramBot.task;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 @Setter
@@ -18,15 +17,17 @@ public class TaskData {
     private Timestamp creationDate;
     private int step = 0;
 
-
     private String selectedField;
     private String newValue;
+
+    private boolean notified = false;
+    private int deadlineNotificationCount = 0; // Новое поле
 
     public TaskData(Long chatId) {
         this.chatId = chatId;
     }
 
-    public TaskData(int dbID, Long chatId, String description, Timestamp deadline, String priority, String status, Timestamp creationDate) {
+    public TaskData(int dbID, Long chatId, String description, Timestamp deadline, String priority, String status, Timestamp creationDate, int deadlineNotificationCount) {
         this.dbID = dbID;
         this.chatId = chatId;
         this.description = description;
@@ -34,6 +35,7 @@ public class TaskData {
         this.priority = priority;
         this.status = status;
         this.creationDate = creationDate;
+        this.deadlineNotificationCount = deadlineNotificationCount;
     }
 
     public void nextStep() {
