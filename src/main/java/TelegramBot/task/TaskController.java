@@ -5,13 +5,10 @@ import TelegramBot.task.utils.TaskBuilder;
 import TelegramBot.task.utils.TaskOperation;
 import TelegramBot.task.utils.TaskRemover;
 import TelegramBot.task.utils.TaskUpdater;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-
-// TODO: Нужно вытащить отсюда MessageSender, чтобы он только в BotUtils и MessageSender
 
 public class TaskController {
     private final Map<String, TaskOperation> operations = new HashMap<>();

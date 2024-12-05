@@ -1,6 +1,5 @@
 package TelegramBot.auth;
 
-import TelegramBot.model.UserRepository;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import java.sql.SQLException;
 

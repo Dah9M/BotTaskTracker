@@ -6,10 +6,6 @@ import TelegramBot.task.TaskController;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-// TODO: Вынести в отдельный синглтон все сервисы, контроллеры и репозитории и передавать только его
-// TODO: Вынести в адекватный синглтон мапу с командами
-
-
 public class UpdateHandler {
     private final MessageSender messageSender;
     private final BotUtils botUtils;

@@ -3,7 +3,6 @@ package TelegramBot.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 @Setter
