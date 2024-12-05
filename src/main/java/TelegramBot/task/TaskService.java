@@ -20,7 +20,6 @@ public class TaskService {
             database.addTask(task);
             return "Task added successfully!";
         } catch (SQLException e) {
-            e.printStackTrace();
             return "Error while adding task.";
         }
     }

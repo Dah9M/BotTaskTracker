@@ -1,113 +1,62 @@
 package TelegramBot.service;
 
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 public class Keyboard {
 
-    public InlineKeyboardMarkup setStartKeyboard() {
-        InlineKeyboardMarkup startMenu = new InlineKeyboardMarkup();
+    public ReplyKeyboardMarkup setStartKeyboard() {
+        ReplyKeyboardMarkup startMenu = new ReplyKeyboardMarkup();
+        startMenu.setResizeKeyboard(true);
+        startMenu.setOneTimeKeyboard(true);
 
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        KeyboardRow row1 = new KeyboardRow();
+        row1.add("Register");
 
-        List<InlineKeyboardButton> row1 = new ArrayList<>();
-        InlineKeyboardButton registerButton = new InlineKeyboardButton();
-        registerButton.setText("Register");
-        registerButton.setCallbackData("register");
-
-        row1.add(registerButton);
-        rowsInline.add(row1);
-
-        startMenu.setKeyboard(rowsInline);
+        startMenu.setKeyboard(Arrays.asList(row1));
 
         return startMenu;
     }
 
-    public InlineKeyboardMarkup setMainKeyboard() {
-        InlineKeyboardMarkup mainMenu = new InlineKeyboardMarkup();
+    public ReplyKeyboardMarkup setMainKeyboard() {
+        ReplyKeyboardMarkup mainMenu = new ReplyKeyboardMarkup();
+        mainMenu.setResizeKeyboard(true);
+        mainMenu.setOneTimeKeyboard(true);
 
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        KeyboardRow row1 = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
+        KeyboardRow row3 = new KeyboardRow();
 
-        List<InlineKeyboardButton> row1 = new ArrayList<>();
-        InlineKeyboardButton addTaskButton = new InlineKeyboardButton();
-        InlineKeyboardButton updateTaskButton = new InlineKeyboardButton();
+        row1.add("Add Task");
+        row1.add("Update Task");
 
-        addTaskButton.setText("Add Task");
-        updateTaskButton.setText("Update Task");
-        addTaskButton.setCallbackData("addTask");
-        updateTaskButton.setCallbackData("updateTask");
+        row2.add("View Tasks");
+        row2.add("Delete Task");
 
-        row1.add(addTaskButton);
-        row1.add(updateTaskButton);
+        row3.add("Help");
 
-        List<InlineKeyboardButton> row2 = new ArrayList<>();
-        InlineKeyboardButton viewTasksButton = new InlineKeyboardButton();
-        InlineKeyboardButton deleteTaskButton = new InlineKeyboardButton();
-
-        viewTasksButton.setText("View Tasks");
-        deleteTaskButton.setText("Delete Task");
-        viewTasksButton.setCallbackData("viewTasks");
-        deleteTaskButton.setCallbackData("deleteTask");
-
-        row2.add(viewTasksButton);
-        row2.add(deleteTaskButton);
-
-        List<InlineKeyboardButton> row3 = new ArrayList<>();
-
-        InlineKeyboardButton help = new InlineKeyboardButton();
-
-        help.setText("Help");
-        help.setCallbackData("help");
-
-        row3.add(help);
-
-        rowsInline.add(row1);
-        rowsInline.add(row2);
-        rowsInline.add(row3);
-
-        mainMenu.setKeyboard(rowsInline);
+        mainMenu.setKeyboard(Arrays.asList(row1, row2, row3));
 
         return mainMenu;
     }
 
-    public InlineKeyboardMarkup setViewTasksKeyboard() {
-        InlineKeyboardMarkup tasksKeyboard = new InlineKeyboardMarkup();
+    public ReplyKeyboardMarkup setViewTasksKeyboard() {
+        ReplyKeyboardMarkup tasksKeyboard = new ReplyKeyboardMarkup();
+        tasksKeyboard.setResizeKeyboard(true);
+        tasksKeyboard.setOneTimeKeyboard(true);
 
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        KeyboardRow row1 = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
 
-        List<InlineKeyboardButton> row1 = new ArrayList<>();
-        List<InlineKeyboardButton> row2 = new ArrayList<>();
-        List<InlineKeyboardButton> row3 = new ArrayList<>();
-        List<InlineKeyboardButton> row4 = new ArrayList<>();
+        row1.add("All Tasks");
+        row1.add("Waiting Tasks");
 
-        InlineKeyboardButton allTasksButton = new InlineKeyboardButton();
-        InlineKeyboardButton waitingTasksButton = new InlineKeyboardButton();
-        InlineKeyboardButton activeTasksButton = new InlineKeyboardButton();
-        InlineKeyboardButton completedTasksButton = new InlineKeyboardButton();
+        row2.add("Active Tasks");
+        row2.add("Completed Tasks");
 
-        allTasksButton.setText("All Tasks.");
-        allTasksButton.setCallbackData("allTasks");
-        waitingTasksButton.setText("Waiting Tasks.");
-        waitingTasksButton.setCallbackData("waitingTasks");
-        activeTasksButton.setText("Active Tasks.");
-        activeTasksButton.setCallbackData("activeTasks");
-        completedTasksButton.setText("Completed Tasks.");
-        completedTasksButton.setCallbackData("completedTasks");
-
-        row1.add(allTasksButton);
-        row2.add(waitingTasksButton);
-        row3.add(activeTasksButton);
-        row4.add(completedTasksButton);
-
-        rowsInline.add(row1);
-        rowsInline.add(row2);
-        rowsInline.add(row3);
-        rowsInline.add(row4);
-
-        tasksKeyboard.setKeyboard(rowsInline);
+        tasksKeyboard.setKeyboard(Arrays.asList(row1, row2));
 
         return tasksKeyboard;
     }
