@@ -13,7 +13,7 @@ public class UserRepository {
     }
 
     public boolean registerUser(User user) throws SQLException {
-        String query = "INSERT INTO users (chatid) VALUES (?)";
+        String query = "INSERT INTO users (chat_id) VALUES (?)";
 
         try (Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, user.getChatId());
@@ -22,14 +22,14 @@ public class UserRepository {
     }
 
     public User getUserByChatId(Long chatId) throws SQLException {
-        String query = "SELECT * FROM users WHERE chatid = ?";
+        String query = "SELECT * FROM users WHERE chat_id = ?";
 
         try (Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, chatId);
             ResultSet result = statement.executeQuery();
 
             if (result.next()) {
-                return new User(result.getLong("chatid"));
+                return new User(result.getLong("chat_id"));
             }
 
             return null;
