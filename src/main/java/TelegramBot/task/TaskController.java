@@ -37,6 +37,12 @@ public class TaskController {
         return taskUpdater.startOperation(chatId);
     }
 
+    // Инициализация процесса удаления задачи
+    public String deleteTaskCommand(Long chatId) {
+        TaskOperation taskRemover = operations.get("delete");
+        return taskRemover.startOperation(chatId);
+    }
+
     // Отображение всех задач с фильтрацией по статусу
     public void viewTasksCommand(Long chatId, String status) {
         String tasks = taskService.getTasksByStatus(chatId, status);
@@ -67,13 +73,7 @@ public class TaskController {
         return taskUpdater.isOperationCompleted(chatId);
     }
 
-    // для удаление таски
-    public String deleteTaskCommand(Long chatId) {
-        TaskOperation taskRemover = operations.get("delete");
-        return taskRemover.startOperation(chatId);
-    }
-
-    // так надо для проверки есть ли таски
+    // Проверка наличия задач у пользователя
     public boolean hasTasks(Long chatId) {
         List<TaskData> tasks = taskService.getTasks(chatId, "allTasks");
         return !tasks.isEmpty();

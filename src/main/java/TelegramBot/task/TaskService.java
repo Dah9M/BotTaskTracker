@@ -41,16 +41,22 @@ public class TaskService {
 
     // Обновление поля задачи
     public String updateTaskField(Long chatId, int dbID, String field, String newValue) {
-        List<TaskData> tasks = database.getTasks(chatId, "allTasks");
-        if (dbID < 0 || dbID >= tasks.size()) {
-            return "Task ID not found.";
-        }
-
-        TaskData task = tasks.get(dbID);
-        long trueId = task.getDbID();
-
         try {
-            switch (field) {
+            // Проверяем наличие задачи по dbID
+            List<TaskData> tasks = database.getTasks(chatId, "allTasks");
+            TaskData taskToUpdate = tasks.stream()
+                    .filter(task -> task.getDbID() == dbID)
+                    .findFirst()
+                    .orElse(null);
+
+            if (taskToUpdate == null) {
+                return "Task ID not found.";
+            }
+
+            long trueId = taskToUpdate.getDbID();
+
+            // Обновляем поле задачи в базе данных
+            switch (field.toLowerCase()) {
                 case "description":
                 case "priority":
                     return database.updateTaskField(trueId, field, newValue);

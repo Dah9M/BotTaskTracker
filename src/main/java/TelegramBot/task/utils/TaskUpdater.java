@@ -67,4 +67,9 @@ public class TaskUpdater implements TaskOperation {
     public void clearOperationData(Long chatId) {
         taskDataMap.remove(chatId);
     }
+
+    @Override
+    public boolean isInProgress(Long chatId) {
+        return taskDataMap.containsKey(chatId);
+    }
 }

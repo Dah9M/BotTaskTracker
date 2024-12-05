@@ -75,4 +75,9 @@ public class TaskBuilder implements TaskOperation {
     public boolean isInProgress(long chatId) {
         return taskDataMap.containsKey(chatId);
     }
+
+    @Override
+    public boolean isInProgress(Long chatId) {
+        return taskDataMap.containsKey(chatId);
+    }
 }
