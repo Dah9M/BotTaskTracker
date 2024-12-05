@@ -61,6 +61,12 @@ public class TaskController {
         return taskUpdater.processInput(chatId, input);
     }
 
+    // Обработка пошагового ввода для удаления задачи
+    public String handleDeleteInput(Long chatId, String input) {
+        TaskOperation taskRemover = operations.get("delete");
+        return taskRemover.processInput(chatId, input);
+    }
+
     // Проверка, находится ли пользователь в процессе добавления задачи
     public boolean isTaskInProgress(Long chatId) {
         TaskOperation taskBuilder = operations.get("create");
@@ -70,7 +76,13 @@ public class TaskController {
     // Проверка, находится ли пользователь в процессе обновления задачи
     public boolean isUpdateInProgress(Long chatId) {
         TaskOperation taskUpdater = operations.get("update");
-        return taskUpdater.isOperationCompleted(chatId);
+        return taskUpdater.isInProgress(chatId);
+    }
+
+    // Проверка, находится ли пользователь в процессе удаления задачи
+    public boolean isDeleteInProgress(Long chatId) {
+        TaskOperation taskRemover = operations.get("delete");
+        return taskRemover.isInProgress(chatId);
     }
 
     // Проверка наличия задач у пользователя

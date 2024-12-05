@@ -140,6 +140,9 @@ public class UpdateHandler {
         } else if (taskController.isUpdateInProgress(currentChatId)) {
             String response = taskController.handleUpdateInput(currentChatId, currentInput);
             messageSender.sendMessage(currentChatId, response);
+        } else if (taskController.isDeleteInProgress(currentChatId)) {
+            String response = taskController.handleDeleteInput(currentChatId, currentInput);
+            messageSender.sendMessage(currentChatId, response);
         } else {
             Runnable command = commandMap.get(currentInput);
             if (command != null) {
