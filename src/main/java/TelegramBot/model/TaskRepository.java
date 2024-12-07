@@ -15,7 +15,7 @@ public class TaskRepository {
     }
 
     public boolean addTask(Task task) throws SQLException {
-        String query = "INSERT INTO tasks (chat_id, description, deadline, priority, status, creation_date, notified, deadline_notification_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO tasks (chat_id, description, deadline, priority, status, creation_date, notified, deadline_notification_count, last_notification_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, task.getChatId());
@@ -26,7 +26,7 @@ public class TaskRepository {
             statement.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
             statement.setBoolean(7, task.isNotified());
             statement.setInt(8, task.getDeadlineNotificationCount());
-
+            statement.setTimestamp(9, null); // при создании еще не уведомляли
             return statement.executeUpdate() > 0;
         }
     }
@@ -68,8 +68,9 @@ public class TaskRepository {
                     String status = resultSet.getString("status");
                     Timestamp creationDate = resultSet.getTimestamp("creation_date");
                     int deadlineNotificationCount = resultSet.getInt("deadline_notification_count");
+                    Timestamp lastNotificationTime = resultSet.getTimestamp("last_notification_time");
 
-                    TaskData task = new TaskData(dbID, chatid, description, deadline, priority, status, creationDate, deadlineNotificationCount);
+                    TaskData task = new TaskData(dbID, chatid, description, deadline, priority, status, creationDate, deadlineNotificationCount, lastNotificationTime);
                     tasks.add(task);
                 }
             }
@@ -97,7 +98,21 @@ public class TaskRepository {
         }
     }
 
-    // Обновление отдельного поля задачи
+    // Новый метод для обновления времени последнего уведомления
+    public boolean updateTaskLastNotificationTime(int taskId, Timestamp time) {
+        String query = "UPDATE tasks SET last_notification_time = ? WHERE id = ?";
+
+        try (Connection connection = database.connect();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setTimestamp(1, time);
+            statement.setInt(2, taskId);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public <T> String updateTaskField(long id, String fieldName, T newValue) {
         String query = "UPDATE tasks SET " + fieldName + " = ? WHERE id = ?";
 
@@ -121,7 +136,6 @@ public class TaskRepository {
         }
     }
 
-    // Удаление задачи по ID
     public boolean deleteTask(Long taskId) throws SQLException {
         String query = "DELETE FROM tasks WHERE id = ?";
 

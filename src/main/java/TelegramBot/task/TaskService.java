@@ -7,13 +7,13 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
-
 public class TaskService {
     private final TaskRepository database;
 
     public TaskService(TaskRepository database) {
         this.database = database;
     }
+
     public String addTask(Long chatId, String description, Timestamp deadline, String priority, Timestamp creationDate, int deadlineNotificationCount) {
         Task task = new Task(chatId, description, deadline, priority, creationDate, deadlineNotificationCount);
         try {
@@ -31,14 +31,13 @@ public class TaskService {
         }
         StringBuilder taskList = new StringBuilder("Tasks:\n");
         for (TaskData task : tasks) {
-            taskList.append(task.toString()).append("\n"); // Переопределите метод toString() в Task для форматирования
+            taskList.append(task.toString()).append("\n");
         }
         return taskList.toString();
     }
 
     public String updateTaskField(Long chatId, int dbID, String field, String newValue) {
         try {
-            // Проверяем наличие задачи по dbID
             List<TaskData> tasks = database.getTasks(chatId, "allTasks");
             TaskData taskToUpdate = tasks.stream()
                     .filter(task -> task.getDbID() == dbID)
@@ -51,13 +50,12 @@ public class TaskService {
 
             long trueId = taskToUpdate.getDbID();
 
-            // Обновляем поле задачи в базе данных
             switch (field.toLowerCase()) {
                 case "description":
                 case "priority":
                     return database.updateTaskField(trueId, field, newValue);
                 case "deadline":
-                    Timestamp deadline = Timestamp.valueOf(newValue);
+                    Timestamp deadline = TelegramBot.utils.TimeConverter.convertFromUTCPlus5ToUTC(newValue);
                     return database.updateTaskField(trueId, field, deadline);
                 default:
                     return "Invalid field.";
@@ -77,14 +75,19 @@ public class TaskService {
         }
     }
 
-    // для получения инфы о тасках
     public List<TaskData> getTasks(Long chatId, String status) {
         if (chatId == null) {
             throw new IllegalArgumentException("Chat ID cannot be null");
         }
         return database.getTasks(chatId, status);
     }
+
     public void updateTaskNotificationCount(int taskId, int newCount) {
         database.updateTaskNotificationCount(taskId, newCount);
+    }
+
+    // Новый метод для обновления времени последнего уведомления
+    public void updateTaskLastNotifyTime(int taskId, Timestamp time) {
+        database.updateTaskLastNotificationTime(taskId, time);
     }
 }

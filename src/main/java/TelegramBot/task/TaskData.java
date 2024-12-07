@@ -21,13 +21,16 @@ public class TaskData {
     private String newValue;
 
     private boolean notified = false;
-    private int deadlineNotificationCount = 0; // Новое поле
+    private int deadlineNotificationCount = 0;
+
+    // Новое поле для отслеживания времени последнего уведомления
+    private Timestamp lastNotificationTime;
 
     public TaskData(Long chatId) {
         this.chatId = chatId;
     }
 
-    public TaskData(int dbID, Long chatId, String description, Timestamp deadline, String priority, String status, Timestamp creationDate, int deadlineNotificationCount) {
+    public TaskData(int dbID, Long chatId, String description, Timestamp deadline, String priority, String status, Timestamp creationDate, int deadlineNotificationCount, Timestamp lastNotificationTime) {
         this.dbID = dbID;
         this.chatId = chatId;
         this.description = description;
@@ -36,6 +39,7 @@ public class TaskData {
         this.status = status;
         this.creationDate = creationDate;
         this.deadlineNotificationCount = deadlineNotificationCount;
+        this.lastNotificationTime = lastNotificationTime;
     }
 
     public void nextStep() {

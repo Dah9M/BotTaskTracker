@@ -1,14 +1,12 @@
 package TelegramBot.controller;
 
+import TelegramBot.model.BotUtils; // Добавляем импорт
 import TelegramBot.service.UpdateHandler;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public class BotController extends TelegramLongPollingBot {
 
@@ -32,5 +30,9 @@ public class BotController extends TelegramLongPollingBot {
     public String getBotToken() {
         Dotenv dotenv = Dotenv.load();
         return dotenv.get("BOT_TOKEN");
+    }
+
+    public BotUtils getBotUtils() {
+        return updateHandler.getBotUtils();
     }
 }

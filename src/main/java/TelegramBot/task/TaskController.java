@@ -22,11 +22,13 @@ public class TaskController {
         this.taskService = taskService;
         this.notificationService = new NotificationService(taskService, botUtils);
 
-
-        // Регистрация операций
         operations.put("create", new TaskBuilder(taskService));
         operations.put("update", new TaskUpdater(taskService));
         operations.put("delete", new TaskRemover(taskService));
+    }
+
+    public NotificationService getNotificationService() {
+        return notificationService;
     }
 
     // Инициализация процесса добавления задачи
@@ -106,3 +108,4 @@ public class TaskController {
         return !tasks.isEmpty();
     }
 }
+

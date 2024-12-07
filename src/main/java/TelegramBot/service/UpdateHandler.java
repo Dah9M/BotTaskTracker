@@ -13,8 +13,14 @@ public class UpdateHandler {
 
     public UpdateHandler(TelegramLongPollingBot bot) {
         this.messageSender = new MessageSender(bot);
+        // Создаём botUtils только тут, с уже готовым messageSender
         this.botUtils = BotUtils.getInstance(messageSender);
+        // Создаём commands только после botUtils
         this.commands = Commands.getInstance(botUtils);
+    }
+
+    public BotUtils getBotUtils() {
+        return botUtils;
     }
 
     public void handleTextMessage(Update update) {

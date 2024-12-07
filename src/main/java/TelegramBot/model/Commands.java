@@ -104,14 +104,9 @@ public class Commands {
 
     }
 
-    public static Commands getInstance(BotUtils botUtils) {
+    public static synchronized Commands getInstance(BotUtils botUtils) {
         if (instance == null) {
             instance = new Commands(botUtils);
-            synchronized (instance) {
-                if (instance == null) {
-                    instance = new Commands(botUtils);
-                }
-            }
         }
         return instance;
     }

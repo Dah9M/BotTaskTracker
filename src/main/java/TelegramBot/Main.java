@@ -13,5 +13,7 @@ public class Main {
         BotController botController = new BotController();
         telegramBotsApi.registerBot(botController);
 
+        // После того, как бот зарегистрирован и все инициализировано:
+        botController.getBotUtils().getTaskController().getNotificationService().initScheduler();
     }
 }
