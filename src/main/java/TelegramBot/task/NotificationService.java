@@ -49,9 +49,12 @@ public class NotificationService {
                 long timeLeft = task.getDeadline().toInstant().toEpochMilli() - now.toEpochMilli();
 
                 if (timeLeft > 0 && timeLeft <= 10 * 60 * 1000) {
+                    // происходит изменение chat_id, может изменится поведение (сомнительное изменение)
+                    messageSender.setCurrentChatId(task.getChatId());
                     messageSender.sendMessage("⏰ Напоминание! До дедлайна задачи '" + task.getDescription() + "' осталось менее 10 минут!");
                 } else if (timeLeft <= 0) {
                     if (task.getDeadlineNotificationCount() < 3) {
+                        messageSender.setCurrentChatId(task.getChatId());
                         messageSender.sendMessage("❗️ Дедлайн задачи '" + task.getDescription() + "' уже прошёл!");
                         task.setDeadlineNotificationCount(task.getDeadlineNotificationCount() + 1);
 

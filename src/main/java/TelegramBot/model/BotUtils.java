@@ -22,13 +22,12 @@ public class BotUtils {
 
 
     private BotUtils(MessageSender messageSender) {
-
+        this.messageSender = messageSender;
         this.databaseConnector = new DatabaseConnector();
         this.userRepository = new UserRepository(databaseConnector);
         this.taskRepository = new TaskRepository(databaseConnector);
         this.authController = new AuthController(new AuthService(userRepository));
         this.taskController = new TaskController(new TaskService(taskRepository), this);
-        this.messageSender = messageSender;
         this.keyboard = new Keyboard();
     }
 
