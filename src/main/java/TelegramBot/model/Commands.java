@@ -35,9 +35,10 @@ public class Commands {
                 messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Menu"));
         commandMap.put("Add Task", () -> {
             String response = taskController.addTaskCommand();
-            messageSender.sendMessage(response);});
+            messageSender.sendMessage(response);
+        });
         commandMap.put("Update Task", () -> {
-            taskController.viewTasksCommand( "allTasks");
+            taskController.viewTasksCommand("allTasks");
             messageSender.sendMessage(taskController.updateTaskCommand());
         });
 
@@ -106,8 +107,7 @@ public class Commands {
 
     public static Commands getInstance(BotUtils botUtils) {
         if (instance == null) {
-            instance = new Commands(botUtils);
-            synchronized (instance) {
+            synchronized (Commands.class) {
                 if (instance == null) {
                     instance = new Commands(botUtils);
                 }

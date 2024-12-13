@@ -82,7 +82,7 @@ public class TaskController {
     public boolean isTaskInProgress() {
         TaskOperation taskBuilder = operations.get("create");
         chatId = botUtils.getMessageSender().getCurrentChatId();
-        return ((TaskBuilder) taskBuilder).isInProgress(chatId);
+        return taskBuilder.isInProgress(chatId);
     }
 
     // Проверка, находится ли пользователь в процессе обновления задачи
