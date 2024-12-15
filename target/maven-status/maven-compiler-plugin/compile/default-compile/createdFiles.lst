@@ -6,9 +6,9 @@ TelegramBot/task/TaskService.class
 TelegramBot/service/Keyboard.class
 TelegramBot/task/utils/TaskBuilder.class
 TelegramBot/task/NotificationService$1.class
-TelegramBot/model/DatabaseConnector.class
 TelegramBot/model/BotUtils.class
 TelegramBot/model/TaskRepository.class
+TelegramBot/model/DatabaseConnector.class
 TelegramBot/task/utils/TaskRemover.class
 TelegramBot/service/MessageSender.class
 TelegramBot/controller/BotController.class

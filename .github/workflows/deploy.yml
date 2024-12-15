@@ -25,5 +25,5 @@ jobs:
           git pull origin master
           mvn clean package
           cp target/Bot-Task-Tracker-1.0.0.jar /opt/telegram-bot/Bot-Task-Tracker.jar
-          sudo systemctl restart telegram-bot
+          sudo systemctl restart BotTaskTracker
           EOF
