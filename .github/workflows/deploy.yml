@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh botuser@176.126.113.21 << 'EOF'
+          ssh root@176.126.113.21 << 'EOF'
           cd /opt/BotTaskTracker
           git pull origin master
           mvn clean package
