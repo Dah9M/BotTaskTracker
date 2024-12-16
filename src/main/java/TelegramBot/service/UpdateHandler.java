@@ -29,18 +29,25 @@ public class UpdateHandler {
             if (taskController.isWaitingForPriorityInput()) { // метод добавляем в TaskController
                 if (!TaskPriority.isValidPriority(currentInput)) {
                     messageSender.sendMessage("Invalid priority. Please enter Low, Medium, or High.");
-                } else {
-                    messageSender.sendMessage(taskController.handleTaskInput(currentInput));
                 }
             } else {
                 messageSender.sendMessage(taskController.handleTaskInput(currentInput));
             }
         } else if (taskController.isUpdateInProgress()) {
-            String response = taskController.handleUpdateInput(currentInput);
-            messageSender.sendMessage(response);
+            if (!currentInput.matches("^\\d+$")) {
+                messageSender.sendMessage("Please enter a valid number.");
+            } else {
+                String response = taskController.handleUpdateInput(currentInput);
+                messageSender.sendMessage(response);
+            }
+
         } else if (taskController.isDeleteInProgress()) {
-            String response = taskController.handleDeleteInput(currentInput);
-            messageSender.sendMessage(response);
+            if (!currentInput.matches("^\\d+$")) {
+                messageSender.sendMessage("Please enter a valid number.");
+            } else {
+                String response = taskController.handleDeleteInput(currentInput);
+                messageSender.sendMessage(response);
+            }
         } else {
             Runnable command = commands.getCommand(currentInput);
             if (command != null) {

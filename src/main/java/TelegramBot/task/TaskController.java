@@ -1,6 +1,7 @@
 package TelegramBot.task;
 
 import TelegramBot.model.BotUtils;
+import TelegramBot.model.TaskPriority;
 import TelegramBot.task.utils.TaskBuilder;
 import TelegramBot.task.utils.TaskOperation;
 import TelegramBot.task.utils.TaskRemover;
