@@ -2,6 +2,7 @@ package TelegramBot.task.utils;
 
 import TelegramBot.task.TaskData;
 import TelegramBot.task.TaskService;
+import TelegramBot.model.TaskPriority;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +40,13 @@ public class TaskUpdater implements TaskOperation {
                 return "Please enter the new value for " + input + ".";
 
             case 2:
-                taskData.setNewValue(input);
+                if ("priority".equalsIgnoreCase(taskData.getSelectedField())) {
+                    if (!TaskPriority.isValidPriority(input)) {
+                        return "Invalid priority. Please enter one of the following: Low, Medium, High.";
+                    }
+                }
+                taskData.setNewValue(TaskPriority.valueOf(input.toUpperCase()).name());
+
 
                 // обновляем задачу в бд
                 String result = taskService.updateTaskField(

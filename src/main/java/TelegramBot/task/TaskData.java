@@ -1,5 +1,6 @@
 package TelegramBot.task;
 
+import TelegramBot.model.TaskPriority;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,7 @@ public class TaskData {
     private long chatId;
     private String description;
     private Timestamp deadline;
-    private String priority;
+    private TaskPriority priority;
     private String status;
     private Timestamp creationDate;
     private int step = 0;
@@ -27,7 +28,7 @@ public class TaskData {
         this.chatId = chatId;
     }
 
-    public TaskData(int dbID, Long chatId, String description, Timestamp deadline, String priority, String status, Timestamp creationDate, int deadlineNotificationCount) {
+    public TaskData(int dbID, Long chatId, String description, Timestamp deadline, TaskPriority priority, String status, Timestamp creationDate, int deadlineNotificationCount) {
         this.dbID = dbID;
         this.chatId = chatId;
         this.description = description;
@@ -36,6 +37,14 @@ public class TaskData {
         this.status = status;
         this.creationDate = creationDate;
         this.deadlineNotificationCount = deadlineNotificationCount;
+    }
+
+    public void setPriority(String priority) {
+        if (TaskPriority.isValidPriority(priority)) {
+            this.priority = TaskPriority.valueOf(priority.toUpperCase());
+        } else {
+            throw new IllegalArgumentException("Invalid priority: " + priority);
+        }
     }
 
     public void nextStep() {

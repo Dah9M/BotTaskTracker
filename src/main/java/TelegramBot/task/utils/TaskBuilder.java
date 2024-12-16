@@ -1,5 +1,6 @@
 package TelegramBot.task.utils;
 
+import TelegramBot.model.TaskPriority;
 import TelegramBot.task.TaskData;
 import TelegramBot.task.TaskService;
 
@@ -63,7 +64,11 @@ public class TaskBuilder implements TaskOperation {
                 }
 
             case 2:
-                taskData.setPriority(input);
+                if (!TaskPriority.isValidPriority(input)) {
+                    return "Invalid priority. Please enter one of the following: Low, Medium, High.";
+                }
+
+                taskData.setPriority(TaskPriority.valueOf(input.toUpperCase()).name());
                 taskData.setCreationDate(new Timestamp(System.currentTimeMillis()));
                 taskData.setDeadlineNotificationCount(0); // Инициализируем счетчик
 
@@ -71,7 +76,7 @@ public class TaskBuilder implements TaskOperation {
                         taskData.getChatId(),
                         taskData.getDescription(),
                         taskData.getDeadline(),
-                        taskData.getPriority(),
+                        taskData.getPriority().name(),
                         taskData.getCreationDate(),
                         taskData.getDeadlineNotificationCount()
                 );
@@ -91,5 +96,9 @@ public class TaskBuilder implements TaskOperation {
     @Override
     public boolean isInProgress(Long chatId) {
         return taskDataMap.containsKey(chatId);
+    }
+
+    public TaskData getTaskData(Long chatId) {
+        return taskDataMap.get(chatId);
     }
 }

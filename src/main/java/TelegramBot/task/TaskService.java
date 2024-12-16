@@ -1,6 +1,7 @@
 package TelegramBot.task;
 
 import TelegramBot.model.Task;
+import TelegramBot.model.TaskPriority;
 import TelegramBot.model.TaskRepository;
 
 import java.sql.SQLException;
@@ -15,7 +16,11 @@ public class TaskService {
         this.database = database;
     }
     public String addTask(Long chatId, String description, Timestamp deadline, String priority, Timestamp creationDate, int deadlineNotificationCount) {
-        Task task = new Task(chatId, description, deadline, priority, creationDate, deadlineNotificationCount);
+        if (!TaskPriority.isValidPriority(priority)) {
+            return "Invalid priority. Use Low, Medium, or High.";
+        }
+
+        Task task = new Task(chatId, description, deadline, TaskPriority.valueOf(priority.toUpperCase()), creationDate, deadlineNotificationCount);
         try {
             database.addTask(task);
             return "Task added successfully!";

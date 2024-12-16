@@ -104,4 +104,15 @@ public class TaskController {
         List<TaskData> tasks = taskService.getTasks(chatId, "allTasks");
         return !tasks.isEmpty();
     }
+
+    public boolean isWaitingForPriorityInput() {
+        TaskOperation taskBuilder = operations.get("create");
+        if (taskBuilder instanceof TaskBuilder) {
+            Long chatId = botUtils.getMessageSender().getCurrentChatId();
+            TaskBuilder builder = (TaskBuilder) taskBuilder;
+            TaskData taskData = builder.getTaskData(chatId);
+            return taskData != null && taskData.getStep() == 2; // Шаг 2 — ввод приоритета
+        }
+        return false;
+    }
 }

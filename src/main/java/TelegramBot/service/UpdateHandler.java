@@ -3,6 +3,7 @@ package TelegramBot.service;
 import TelegramBot.model.BotUtils;
 import TelegramBot.model.Commands;
 import TelegramBot.task.TaskController;
+import TelegramBot.model.TaskPriority;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -25,8 +26,15 @@ public class UpdateHandler {
         messageSender.setCurrentChatId(currentChatId);
 
         if (taskController.isTaskInProgress()) {
-            String response = taskController.handleTaskInput(currentInput);
-            messageSender.sendMessage(response);
+            if (taskController.isWaitingForPriorityInput()) { // метод добавляем в TaskController
+                if (!TaskPriority.isValidPriority(currentInput)) {
+                    messageSender.sendMessage("Invalid priority. Please enter Low, Medium, or High.");
+                } else {
+                    messageSender.sendMessage(taskController.handleTaskInput(currentInput));
+                }
+            } else {
+                messageSender.sendMessage(taskController.handleTaskInput(currentInput));
+            }
         } else if (taskController.isUpdateInProgress()) {
             String response = taskController.handleUpdateInput(currentInput);
             messageSender.sendMessage(response);

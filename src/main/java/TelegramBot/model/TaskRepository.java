@@ -21,7 +21,7 @@ public class TaskRepository {
             statement.setLong(1, task.getChatId());
             statement.setString(2, task.getDescription());
             statement.setTimestamp(3, task.getDeadline() != null ? task.getDeadline() : null);
-            statement.setString(4, task.getPriority());
+            statement.setString(4, task.getPriority().name());
             statement.setString(5, task.getStatus());
             statement.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
             statement.setBoolean(7, task.isNotified());
@@ -69,7 +69,7 @@ public class TaskRepository {
                     Timestamp creationDate = resultSet.getTimestamp("creation_date");
                     int deadlineNotificationCount = resultSet.getInt("deadline_notification_count");
 
-                    TaskData task = new TaskData(dbID, chatid, description, deadline, priority, status, creationDate, deadlineNotificationCount);
+                    TaskData task = new TaskData(dbID, chatid, description, deadline, TaskPriority.valueOf(priority.toUpperCase()), status, creationDate, deadlineNotificationCount);
                     tasks.add(task);
                 }
             }
