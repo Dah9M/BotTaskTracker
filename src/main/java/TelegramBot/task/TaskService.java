@@ -29,6 +29,11 @@ public class TaskService {
         }
     }
 
+    public boolean isTaskOwner(Long chatId, int dbID) {
+        List<TaskData> tasks = database.getTasks(chatId, "allTasks");
+        return tasks.stream().anyMatch(task -> task.getDbID() == dbID);
+    }
+
     public String getTasksByStatus(Long chatId, String status) {
         List<TaskData> tasks = database.getTasks(chatId, status);
         if (tasks.isEmpty()) {
@@ -42,6 +47,10 @@ public class TaskService {
     }
 
     public String updateTaskField(Long chatId, int dbID, String field, String newValue) {
+        if (!isTaskOwner(chatId, dbID)) {
+            return "You are not the owner of this task.";
+        }
+
         try {
             // Проверяем наличие задачи по dbID
             List<TaskData> tasks = database.getTasks(chatId, "allTasks");
@@ -59,11 +68,12 @@ public class TaskService {
             // Обновляем поле задачи в базе данных
             switch (field.toLowerCase()) {
                 case "description":
+                    return database.updateTaskField(dbID, field, newValue);
                 case "priority":
-                    return database.updateTaskField(trueId, field, newValue);
+                    return database.updateTaskField(dbID, field, newValue);
                 case "deadline":
                     Timestamp deadline = Timestamp.valueOf(newValue);
-                    return database.updateTaskField(trueId, field, deadline);
+                    return database.updateTaskField(dbID, field, deadline);
                 default:
                     return "Invalid field.";
             }
@@ -72,9 +82,13 @@ public class TaskService {
         }
     }
 
-    public String deleteTask(Long taskId) {
+    public String deleteTask(Long chatId, int dbId) {
+        if (!isTaskOwner(chatId, dbId)) {
+            return "You are not the owner of this task.";
+        }
+
         try {
-            boolean success = database.deleteTask(taskId);
+            boolean success = database.deleteTask(dbId);
             return success ? "Task deleted successfully!" : "Task not found.";
         } catch (SQLException e) {
             e.printStackTrace();

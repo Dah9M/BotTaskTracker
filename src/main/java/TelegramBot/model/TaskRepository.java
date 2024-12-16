@@ -98,7 +98,7 @@ public class TaskRepository {
     }
 
     // Обновление отдельного поля задачи
-    public <T> String updateTaskField(long id, String fieldName, T newValue) {
+    public <T> String updateTaskField(int id, String fieldName, T newValue) {
         String query = "UPDATE tasks SET " + fieldName + " = ? WHERE id = ?";
 
         try (Connection connection = database.connect();
@@ -122,7 +122,7 @@ public class TaskRepository {
     }
 
     // Удаление задачи по ID
-    public boolean deleteTask(Long taskId) throws SQLException {
+    public boolean deleteTask(int taskId) throws SQLException {
         String query = "DELETE FROM tasks WHERE id = ?";
 
         try (Connection connection = database.connect();

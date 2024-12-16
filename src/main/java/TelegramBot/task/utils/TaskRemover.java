@@ -28,10 +28,16 @@ public class TaskRemover implements TaskOperation {
         if (taskData.getStep() == 0) {
             taskData.setDbID(Integer.parseInt(input));
             taskData.nextStep();
+
+            if (!taskService.isTaskOwner(chatId, taskData.getDbID())) {
+                taskDataMap.remove(chatId);
+                return "You are not the owner of this task.";
+            }
+
             return "Are you sure you want to delete this task? Type 'yes' to confirm or 'no' to cancel.";
         } else if (taskData.getStep() == 1) {
             if ("yes".equalsIgnoreCase(input)) {
-                String result = taskService.deleteTask((long) taskData.getDbID());
+                String result = taskService.deleteTask(chatId, taskData.getDbID());
                 taskDataMap.remove(chatId);
                 return result;
             } else {

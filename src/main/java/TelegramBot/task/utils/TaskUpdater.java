@@ -31,6 +31,10 @@ public class TaskUpdater implements TaskOperation {
         switch (taskData.getStep()) {
             case 0:
                 taskData.setDbID(Integer.parseInt(input));
+                if (!taskService.isTaskOwner(chatId, taskData.getDbID())) {
+                    taskDataMap.remove(chatId);
+                    return "You are not the owner of this task.";
+                }
                 taskData.nextStep();
                 return "Please select the field to update: Description, Deadline, or Priority.";
 
