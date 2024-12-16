@@ -37,10 +37,6 @@ public class Commands {
             String response = taskController.addTaskCommand();
             messageSender.sendMessage(response);
         });
-        commandMap.put("Update Task", () -> {
-            taskController.viewTasksCommand("allTasks");
-            messageSender.sendMessage(taskController.updateTaskCommand());
-        });
 
         // Callback команды
         commandMap.put("Register", () -> {

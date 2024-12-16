@@ -102,7 +102,6 @@ public class TaskController {
     // так надо для проверки есть ли таски
     public boolean hasTasks() {
         List<TaskData> tasks = taskService.getTasks(chatId, "allTasks");
-        chatId = botUtils.getMessageSender().getCurrentChatId();
         return !tasks.isEmpty();
     }
 }
