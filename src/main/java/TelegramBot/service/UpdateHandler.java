@@ -30,6 +30,9 @@ public class UpdateHandler {
         } else if (taskController.isUpdateInProgress()) {
             String response = taskController.handleUpdateInput(currentInput);
             messageSender.sendMessage(response);
+        } else if (taskController.isDeleteInProgress()) {
+            String response = taskController.handleDeleteInput(currentInput);
+            messageSender.sendMessage(response);
         } else {
             Runnable command = commands.getCommand(currentInput);
             if (command != null) {

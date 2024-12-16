@@ -84,18 +84,8 @@ public class TaskBuilder implements TaskOperation {
     }
 
     @Override
-    public boolean isOperationCompleted(Long chatId) {
-        TaskData taskData = taskDataMap.get(chatId);
-        return taskData != null && taskData.getStep() >= 3;
-    }
-
-    @Override
     public void clearOperationData(Long chatId) {
         taskDataMap.remove(chatId);
-    }
-
-    public boolean isInProgress(long chatId) {
-        return taskDataMap.containsKey(chatId);
     }
 
     @Override
