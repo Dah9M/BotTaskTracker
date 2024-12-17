@@ -1,6 +1,7 @@
 package TelegramBot.service;
 
 import TelegramBot.task.TaskData;
+import TelegramBot.utils.LoggerFactoryUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.text.StringSubstitutor;
@@ -33,7 +34,7 @@ public class MessageSender {
         try {
             bot.execute(sendMessage);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            LoggerFactoryUtil.logError("Ошибка при попытке отправить сообщение: {}", e);
         }
     }
 
@@ -46,7 +47,7 @@ public class MessageSender {
         try {
             bot.execute(sendMessage);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            LoggerFactoryUtil.logError("Ошибка при попытке отправить клавиатуру: {}", e);
         }
     }
 

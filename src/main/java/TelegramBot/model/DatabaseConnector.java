@@ -1,5 +1,6 @@
 package TelegramBot.model;
 
+import TelegramBot.utils.LoggerFactoryUtil;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.sql.Connection;
@@ -13,6 +14,7 @@ public class DatabaseConnector {
     private static final String PASSWORD = dotenv.get("DB_PASSWORD");
 
     public Connection connect() throws SQLException {
+        LoggerFactoryUtil.logError("Ошибка при попытке подключения к базе данных", new SQLException());
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

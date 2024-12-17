@@ -3,6 +3,7 @@ package TelegramBot.model;
 import TelegramBot.service.Keyboard;
 import TelegramBot.service.MessageSender;
 import TelegramBot.task.TaskController;
+import TelegramBot.utils.LoggerFactoryUtil;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -28,6 +29,8 @@ public class Commands {
                     messageSender.sendReplyMarkup(keyboard.setStartKeyboard(), "Welcome! Please, register by clicking the button below.");
                 }
             } catch (SQLException e) {
+                LoggerFactoryUtil.logError("Ошибка при проверке регистрации пользователя: {}", e, botUtils.getMessageSender().getCurrentChatId());
+
                 messageSender.sendMessage("An error occurred while checking registration status.");
             }
         });

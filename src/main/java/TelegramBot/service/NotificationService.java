@@ -5,6 +5,7 @@ import TelegramBot.model.User;
 import TelegramBot.model.UserRepository;
 import TelegramBot.task.TaskData;
 import TelegramBot.task.TaskService;
+import TelegramBot.utils.LoggerFactoryUtil;
 
 import java.time.Instant;
 import java.util.List;
@@ -43,26 +44,30 @@ public class NotificationService {
             Long chatId = user.getChatId();
             if (chatId == null) continue;
 
-            List<TaskData> tasks = taskService.getTasks(chatId, "allTasks");
-            for (TaskData task : tasks) {
-                if (task.getDeadline() == null) continue;
+            try {
+                List<TaskData> tasks = taskService.getTasks(chatId, "allTasks");
+                for (TaskData task : tasks) {
+                    if (task.getDeadline() == null) continue;
 
-                long timeLeft = task.getDeadline().toInstant().toEpochMilli() - now.toEpochMilli();
+                    long timeLeft = task.getDeadline().toInstant().toEpochMilli() - now.toEpochMilli();
 
-                if (timeLeft > 0 && timeLeft <= 10 * 60 * 1000) {
-                    // происходит изменение chat_id, может изменится поведение (сомнительное изменение)
-                    messageSender.setCurrentChatId(task.getChatId());
-                    messageSender.sendMessage("⏰ Напоминание! До дедлайна задачи '" + task.getDescription() + "' осталось менее 10 минут!");
-                } else if (timeLeft <= 0) {
-                    if (task.getDeadlineNotificationCount() < 3) {
+                    if (timeLeft > 0 && timeLeft <= 10 * 60 * 1000) {
+                        // происходит изменение chat_id, может изменится поведение (сомнительное изменение)
                         messageSender.setCurrentChatId(task.getChatId());
-                        messageSender.sendMessage("❗️ Дедлайн задачи '" + task.getDescription() + "' уже прошёл!");
-                        task.setDeadlineNotificationCount(task.getDeadlineNotificationCount() + 1);
+                        messageSender.sendMessage("⏰ Напоминание! До дедлайна задачи '" + task.getDescription() + "' осталось менее 10 минут!");
+                    } else if (timeLeft <= 0) {
+                        if (task.getDeadlineNotificationCount() < 3) {
+                            messageSender.setCurrentChatId(task.getChatId());
+                            messageSender.sendMessage("❗️ Дедлайн задачи '" + task.getDescription() + "' уже прошёл!");
+                            task.setDeadlineNotificationCount(task.getDeadlineNotificationCount() + 1);
 
-                        // Обновляем счетчик в базе данных
-                        taskService.updateTaskNotificationCount(task.getDbID(), task.getDeadlineNotificationCount());
+                            // Обновляем счетчик в базе данных
+                            taskService.updateTaskNotificationCount(task.getDbID(), task.getDeadlineNotificationCount());
+                        }
                     }
                 }
+            } catch (Exception e) {
+                LoggerFactoryUtil.logError("Ошибка при отправке уведомлений для chatId: {}", e, chatId);
             }
         }
     }

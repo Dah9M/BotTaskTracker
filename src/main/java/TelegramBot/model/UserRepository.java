@@ -1,5 +1,7 @@
 package TelegramBot.model;
 
+import TelegramBot.utils.LoggerFactoryUtil;
+
 import java.util.List; // Импорт списка
 import java.util.ArrayList;
 
@@ -21,6 +23,9 @@ public class UserRepository {
         try (Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, user.getChatId());
             return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LoggerFactoryUtil.logError("Ошибка при попытке регистрации пользователя: {}", e, user.getChatId());
+            return false;
         }
     }
 
@@ -37,7 +42,7 @@ public class UserRepository {
                 users.add(new User(chatId));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LoggerFactoryUtil.logError("Ошибка при получении всех пользователей: {}", e);
         }
 
         return users;
@@ -55,7 +60,10 @@ public class UserRepository {
             }
 
             return null;
+        } catch (SQLException e) {
+            LoggerFactoryUtil.logError("Ошибка при получении по chatId пользователя: {}", e, chatId);
         }
+        return null;
     }
 }
 

@@ -3,6 +3,7 @@ package TelegramBot.task.utils;
 import TelegramBot.model.TaskPriority;
 import TelegramBot.task.TaskData;
 import TelegramBot.task.TaskService;
+import TelegramBot.utils.LoggerFactoryUtil;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ public class TaskBuilder implements TaskOperation {
                     return "Please provide a priority for the task (e.g., High, Medium, Low).";
 
                 } catch (Exception e) {
+                    LoggerFactoryUtil.logError("Неверное форматирование времени пользователем: {}", e, chatId);
                     return "Invalid date format. Please use YYYY-MM-DD HH:MM:SS.";
                 }
 

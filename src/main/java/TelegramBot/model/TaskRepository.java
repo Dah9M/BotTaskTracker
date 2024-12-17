@@ -1,6 +1,7 @@
 package TelegramBot.model;
 
 import TelegramBot.task.TaskData;
+import TelegramBot.utils.LoggerFactoryUtil;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -29,11 +30,15 @@ public class TaskRepository {
             statement.setString(9, String.valueOf(task.getCategory()));
 
             return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LoggerFactoryUtil.logError("Ошибка при добавлении задачи пользователя: {}", e, task.getChatId());
+            return false;
         }
     }
 
     public List<TaskData> getTasks(Long chatId, String key) {
         if (chatId == null) {
+            LoggerFactoryUtil.logError("Ошибка при получении задач пользователя, chatId = null", new IllegalArgumentException(), chatId);
             throw new IllegalArgumentException("Chat ID cannot be null");
         }
 
@@ -78,7 +83,7 @@ public class TaskRepository {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LoggerFactoryUtil.logError("Ошибка при добавлении задачи пользователя: {}", e, chatId);
         }
 
         return tasks;
@@ -109,7 +114,7 @@ public class TaskRepository {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LoggerFactoryUtil.logError("Ошибка при получении задач по категории пользователя: {}", e, chatId);
         }
 
         return tasks;
@@ -140,7 +145,7 @@ public class TaskRepository {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LoggerFactoryUtil.logError("Ошибка при получении задач по приоритету пользователя: {}", e, chatId);
         }
 
         return tasks;
@@ -159,7 +164,7 @@ public class TaskRepository {
 
             return rowsUpdated > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LoggerFactoryUtil.logError("Ошибка при обновлении notificationCount задачи: {}", e, taskId);
             return false;
         }
     }
@@ -185,7 +190,7 @@ public class TaskRepository {
             statement.executeUpdate();
             return fieldName + " updated successfully.";
         } catch (SQLException e) {
-            e.printStackTrace();
+            LoggerFactoryUtil.logError("Ошибка при обновлении задачи: {}", e, id);
             return "Error updating " + fieldName + ".";
         }
     }
@@ -198,6 +203,9 @@ public class TaskRepository {
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, taskId);
             return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LoggerFactoryUtil.logError("Ошибка при удалении задачи: {}", e, taskId);
+            return false;
         }
     }
 }

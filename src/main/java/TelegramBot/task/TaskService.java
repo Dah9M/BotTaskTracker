@@ -4,6 +4,7 @@ import TelegramBot.model.Task;
 import TelegramBot.model.TaskCategory;
 import TelegramBot.model.TaskPriority;
 import TelegramBot.model.TaskRepository;
+import TelegramBot.utils.LoggerFactoryUtil;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -26,6 +27,7 @@ public class TaskService {
             database.addTask(task);
             return "Task added successfully!";
         } catch (SQLException e) {
+            LoggerFactoryUtil.logError("Ошибка при добавлении задачи для chatId: {}", e, chatId);
             return "Error while adding task.";
         }
     }
@@ -38,6 +40,7 @@ public class TaskService {
     public List<TaskData> getTasksByStatus(Long chatId, String status) {
         List<TaskData> tasks = database.getTasks(chatId, status);
         if (tasks.isEmpty()) {
+            LoggerFactoryUtil.logError("Ошибка при получении задач по статусу для chatId: {}", new Exception("No tasks found"), chatId);
             throw new IllegalArgumentException("No tasks found for status " + status);
         }
         return tasks;
@@ -52,6 +55,7 @@ public class TaskService {
         }
 
         if (tasks.isEmpty()) {
+            LoggerFactoryUtil.logError("Ошибка при получении задач по категории для chatId: {}", new Exception("No tasks found"), chatId);
             throw new IllegalArgumentException("No tasks found for category: " + category);
         }
 
@@ -67,6 +71,7 @@ public class TaskService {
         }
 
         if (tasks.isEmpty()) {
+            LoggerFactoryUtil.logError("Ошибка при получении задач по приоритету для chatId: {}", new Exception("No tasks found"), chatId);
             throw new IllegalArgumentException("No tasks found for priority: " + priority);
         }
 
@@ -116,9 +121,10 @@ public class TaskService {
                     return "Invalid field. Only 'description', 'priority', 'category', or 'deadline' can be updated.";
             }
         } catch (IllegalArgumentException e) {
+            LoggerFactoryUtil.logError("Ошибка при попытке ввести дату неверного формата: {}", e, chatId);
             return "Invalid input format. For deadline, use YYYY-MM-DD HH:MM:SS.";
         } catch (Exception e) {
-            e.printStackTrace();
+            LoggerFactoryUtil.logError("Ошибка при обновлении задачи: {}", e, chatId);
             return "An error occurred while updating the task.";
         }
     }
@@ -133,7 +139,7 @@ public class TaskService {
             boolean success = database.deleteTask(dbId);
             return success ? "Task deleted successfully!" : "Task not found.";
         } catch (SQLException e) {
-            e.printStackTrace();
+            LoggerFactoryUtil.logError("Ошибка при удалении задачи: {}", e, chatId);
             return "Error while deleting task.";
         }
     }
@@ -141,7 +147,8 @@ public class TaskService {
     // для получения инфы о тасках
     public List<TaskData> getTasks(Long chatId, String status) {
         if (chatId == null) {
-            throw new IllegalArgumentException("Chat ID cannot be null");
+            LoggerFactoryUtil.logError("Ошибка при получении задач по приоритету для chatId: {}", new Exception("No tasks found"), chatId);
+
         }
         return database.getTasks(chatId, status);
     }
