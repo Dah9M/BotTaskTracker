@@ -1,5 +1,6 @@
 package TelegramBot.task.utils;
 
+import TelegramBot.model.TaskCategory;
 import TelegramBot.task.TaskData;
 import TelegramBot.task.TaskService;
 import TelegramBot.model.TaskPriority;
@@ -36,7 +37,7 @@ public class TaskUpdater implements TaskOperation {
                     return "You are not the owner of this task.";
                 }
                 taskData.nextStep();
-                return "Please select the field to update: Description, Deadline, or Priority.";
+                return "Please select the field to update: Description, Deadline, Category or Priority.";
 
             case 1:
                 taskData.setSelectedField(input);
@@ -48,8 +49,18 @@ public class TaskUpdater implements TaskOperation {
                     if (!TaskPriority.isValidPriority(input)) {
                         return "Invalid priority. Please enter one of the following: Low, Medium, High.";
                     }
+                    taskData.setNewValue(TaskPriority.valueOf(input.toUpperCase()).name());
+
+                } else if ("category".equalsIgnoreCase(taskData.getSelectedField())) {
+                    if (!TaskCategory.isValidCategory(input)) {
+                        return "Invalid category. Please enter one of the following: Work, Life, Education.";
+                    }
+                    taskData.setNewValue(TaskCategory.valueOf(input.toUpperCase()).name());
+                } else if ("description".equalsIgnoreCase(taskData.getSelectedField())) {
+                    taskData.setNewValue(input);
+                } else {
+                    return "Invalid field. You can update only Description, Priority, Deadline, or Category.";
                 }
-                taskData.setNewValue(TaskPriority.valueOf(input.toUpperCase()).name());
 
 
                 // обновляем задачу в бд
@@ -76,5 +87,10 @@ public class TaskUpdater implements TaskOperation {
     @Override
     public boolean isInProgress(Long chatId) {
         return taskDataMap.containsKey(chatId);
+    }
+
+    @Override
+    public TaskData getTaskData(Long chatId) {
+        return taskDataMap.get(chatId);
     }
 }

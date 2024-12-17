@@ -58,4 +58,9 @@ public class TaskRemover implements TaskOperation {
     public boolean isInProgress(Long chatId) {
         return taskDataMap.containsKey(chatId);
     }
+
+    @Override
+    public TaskData getTaskData(Long chatId) {
+        return taskDataMap.get(chatId);
+    }
 }

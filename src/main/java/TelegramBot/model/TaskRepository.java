@@ -26,7 +26,7 @@ public class TaskRepository {
             statement.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
             statement.setBoolean(7, task.isNotified());
             statement.setInt(8, task.getDeadlineNotificationCount());
-            statement.setString(9, task.getCategory());
+            statement.setString(9, String.valueOf(task.getCategory()));
 
             return statement.executeUpdate() > 0;
         }
@@ -175,6 +175,8 @@ public class TaskRepository {
                 statement.setString(1, (String) newValue);
             } else if (newValue instanceof Timestamp) {
                 statement.setTimestamp(1, (Timestamp) newValue);
+            } else if (newValue instanceof TaskCategory) {
+                statement.setString(1, ((TaskCategory) newValue).name());
             } else {
                 return "Unsupported data type for field update.";
             }

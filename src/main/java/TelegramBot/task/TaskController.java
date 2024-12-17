@@ -128,4 +128,15 @@ public class TaskController {
         }
         return false;
     }
+
+    public boolean isWaitingForCategoryInput() {
+        TaskOperation taskUpdater = operations.get("update");
+        if (taskUpdater instanceof TaskUpdater) {
+            TaskUpdater updater = (TaskUpdater) taskUpdater;
+            TaskData taskData = updater.getTaskData(chatId);
+            return taskData != null && "category".equalsIgnoreCase(taskData.getSelectedField());
+        }
+        return false;
+    }
+
 }

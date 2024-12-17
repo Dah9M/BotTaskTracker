@@ -14,7 +14,7 @@ public class Task {
     private TaskPriority priority;
     private String status = "Waiting";
     private Timestamp creationDate;
-    private String category = null;
+    private TaskCategory category = null;
     private boolean notified = false;
     private int deadlineNotificationCount = 0; // Новое поле
 
@@ -32,6 +32,14 @@ public class Task {
             this.priority = TaskPriority.valueOf(priority.toUpperCase());
         } else {
             throw new IllegalArgumentException("Invalid priority: " + priority);
+        }
+    }
+
+    public void setCategory(String category) {
+        if (TaskPriority.isValidPriority(category)) {
+            this.category = TaskCategory.valueOf(category.toUpperCase());
+        } else {
+            throw new IllegalArgumentException("Invalid category: " + category);
         }
     }
 }

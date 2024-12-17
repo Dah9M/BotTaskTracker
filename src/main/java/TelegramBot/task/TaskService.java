@@ -1,6 +1,7 @@
 package TelegramBot.task;
 
 import TelegramBot.model.Task;
+import TelegramBot.model.TaskCategory;
 import TelegramBot.model.TaskPriority;
 import TelegramBot.model.TaskRepository;
 
@@ -101,24 +102,39 @@ public class TaskService {
                 return "Task ID not found.";
             }
 
-            long trueId = taskToUpdate.getDbID();
-
-            // Обновляем поле задачи в базе данных
+            // Проверка и обновление поля задачи
             switch (field.toLowerCase()) {
                 case "description":
                     return database.updateTaskField(dbID, field, newValue);
+
                 case "priority":
-                    return database.updateTaskField(dbID, field, newValue);
+                    if (!TaskPriority.isValidPriority(newValue)) {
+                        return "Invalid priority. Please enter Low, Medium, or High.";
+                    }
+                    return database.updateTaskField(dbID, field, TaskPriority.valueOf(newValue.toUpperCase()).name());
+
+                case "category":
+                    if (!TaskCategory.isValidCategory(newValue)) {
+                        return "Invalid category value.";
+                    }
+                    return database.updateTaskField(dbID, field, TaskCategory.valueOf(newValue.toUpperCase()).name());
+
+
                 case "deadline":
                     Timestamp deadline = Timestamp.valueOf(newValue);
                     return database.updateTaskField(dbID, field, deadline);
+
                 default:
-                    return "Invalid field.";
+                    return "Invalid field. Only 'description', 'priority', 'category', or 'deadline' can be updated.";
             }
         } catch (IllegalArgumentException e) {
-            return "Invalid deadline format. Use YYYY-MM-DD HH:MM:SS.";
+            return "Invalid input format. For deadline, use YYYY-MM-DD HH:MM:SS.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "An error occurred while updating the task.";
         }
     }
+
 
     public String deleteTask(Long chatId, int dbId) {
         if (!isTaskOwner(chatId, dbId)) {

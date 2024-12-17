@@ -2,6 +2,7 @@ package TelegramBot.controller;
 
 import TelegramBot.model.BotUtils;
 import TelegramBot.model.Commands;
+import TelegramBot.model.TaskCategory;
 import TelegramBot.service.MessageSender;
 import TelegramBot.task.TaskController;
 import TelegramBot.model.TaskPriority;
@@ -35,8 +36,13 @@ public class UpdateHandler {
                 messageSender.sendMessage(taskController.handleTaskInput(currentInput));
             }
         } else if (taskController.isUpdateInProgress()) {
-            if (!currentInput.matches("^\\d+$")) {
-                messageSender.sendMessage("Please enter a valid number.");
+            if (taskController.isWaitingForCategoryInput()) { // Добавляем метод
+                if (!TaskCategory.isValidCategory(currentInput)) {
+                    messageSender.sendMessage("Invalid category. Please enter Work, Life, or Education.");
+                } else {
+                    String response = taskController.handleUpdateInput(currentInput);
+                    messageSender.sendMessage(response);
+                }
             } else {
                 String response = taskController.handleUpdateInput(currentInput);
                 messageSender.sendMessage(response);

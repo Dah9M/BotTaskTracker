@@ -1,5 +1,6 @@
 package TelegramBot.task;
 
+import TelegramBot.model.TaskCategory;
 import TelegramBot.model.TaskPriority;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,7 @@ public class TaskData {
     private Timestamp deadline;
     private TaskPriority priority;
     private String status;
-    private String category = null;
+    private TaskCategory category = null;
     private Timestamp creationDate;
     private int step = 0;
 
@@ -48,6 +49,14 @@ public class TaskData {
         }
     }
 
+    public void setCategory(String category) {
+        if (TaskPriority.isValidPriority(category)) {
+            this.category = TaskCategory.valueOf(category.toUpperCase());
+        } else {
+            throw new IllegalArgumentException("Invalid category: " + category);
+        }
+    }
+
     public void nextStep() {
         step++;
     }
@@ -59,6 +68,7 @@ public class TaskData {
                 "\nDeadline: " + (deadline != null ? deadline.toString() : "No deadline set") +
                 "\nPriority: " + priority +
                 "\nStatus: " + status +
-                "\nCreation Date: " + creationDate;
+                "\nCreation Date: " + creationDate +
+                "\nCategory: " + category;
     }
 }
