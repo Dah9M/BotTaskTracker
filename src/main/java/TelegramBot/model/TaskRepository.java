@@ -15,7 +15,7 @@ public class TaskRepository {
     }
 
     public boolean addTask(Task task) throws SQLException {
-        String query = "INSERT INTO tasks (chat_id, description, deadline, priority, status, creation_date, notified, deadline_notification_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO tasks (chat_id, description, deadline, priority, status, creation_date, notified, deadline_notification_count, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, task.getChatId());
@@ -26,6 +26,7 @@ public class TaskRepository {
             statement.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
             statement.setBoolean(7, task.isNotified());
             statement.setInt(8, task.getDeadlineNotificationCount());
+            statement.setString(9, task.getCategory());
 
             return statement.executeUpdate() > 0;
         }
@@ -40,6 +41,9 @@ public class TaskRepository {
         String query;
 
         switch (key) {
+            case "byCategory":
+                query = "SELECT * FROM tasks WHERE chat_id = ? AND category = ?";
+                break;
             case "waitingTasks":
                 query = "SELECT * FROM tasks WHERE chat_id = ? AND status = 'Waiting'";
                 break;
@@ -79,6 +83,69 @@ public class TaskRepository {
 
         return tasks;
     }
+
+    public List<TaskData> getTasksByCategory(Long chatId, String category) {
+        List<TaskData> tasks = new ArrayList<>();
+        String query = "SELECT * FROM tasks WHERE chat_id = ? AND category = ?";
+
+        try (Connection connection = database.connect();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setLong(1, chatId);
+            statement.setString(2, category);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    int dbID = resultSet.getInt("id");
+                    String description = resultSet.getString("description");
+                    Timestamp deadline = resultSet.getTimestamp("deadline");
+                    String priority = resultSet.getString("priority");
+                    String status = resultSet.getString("status");
+                    Timestamp creationDate = resultSet.getTimestamp("creation_date");
+                    int notificationCount = resultSet.getInt("deadline_notification_count");
+
+                    tasks.add(new TaskData(dbID, chatId, description, deadline,
+                            TaskPriority.valueOf(priority.toUpperCase()), status, creationDate, notificationCount));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return tasks;
+    }
+
+    public List<TaskData> getTasksByPriority(Long chatId, String priority) {
+        List<TaskData> tasks = new ArrayList<>();
+        String query = "SELECT * FROM tasks WHERE chat_id = ? AND priority = ?";
+
+        try (Connection connection = database.connect();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setLong(1, chatId);
+            statement.setString(2, priority);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    int dbID = resultSet.getInt("id");
+                    String description = resultSet.getString("description");
+                    Timestamp deadline = resultSet.getTimestamp("deadline");
+                    String taskPriority = resultSet.getString("priority");
+                    String status = resultSet.getString("status");
+                    Timestamp creationDate = resultSet.getTimestamp("creation_date");
+                    int notificationCount = resultSet.getInt("deadline_notification_count");
+
+                    tasks.add(new TaskData(dbID, chatId, description, deadline,
+                            TaskPriority.valueOf(taskPriority.toUpperCase()), status, creationDate, notificationCount));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return tasks;
+    }
+
 
     public boolean updateTaskNotificationCount(int taskId, int newCount) {
         String query = "UPDATE tasks SET deadline_notification_count = ? WHERE id = ?";

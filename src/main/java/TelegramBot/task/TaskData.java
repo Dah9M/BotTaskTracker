@@ -15,6 +15,7 @@ public class TaskData {
     private Timestamp deadline;
     private TaskPriority priority;
     private String status;
+    private String category = null;
     private Timestamp creationDate;
     private int step = 0;
 

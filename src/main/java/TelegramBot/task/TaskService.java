@@ -46,6 +46,44 @@ public class TaskService {
         return taskList.toString();
     }
 
+    public String getTasksByCategory(Long chatId, String category) {
+        List<TaskData> tasks;
+        if ("all".equalsIgnoreCase(category)) {
+            tasks = database.getTasks(chatId, "allTasks");
+        } else {
+            tasks = database.getTasksByCategory(chatId, category);
+        }
+
+        if (tasks.isEmpty()) {
+            return "No tasks found for category: " + category;
+        }
+
+        StringBuilder taskList = new StringBuilder("Tasks in category '" + category + "':\n");
+        for (TaskData task : tasks) {
+            taskList.append(task.toString()).append("\n");
+        }
+        return taskList.toString();
+    }
+
+    public String getTasksByPriority(Long chatId, String priority) {
+        List<TaskData> tasks;
+        if ("All".equalsIgnoreCase(priority)) {
+            tasks = database.getTasks(chatId, "allTasks");
+        } else {
+            tasks = database.getTasksByPriority(chatId, priority.toUpperCase());
+        }
+
+        if (tasks.isEmpty()) {
+            return "No tasks found with priority: " + priority;
+        }
+
+        StringBuilder taskList = new StringBuilder("Tasks with priority '" + priority + "':\n");
+        for (TaskData task : tasks) {
+            taskList.append(task.toString()).append("\n");
+        }
+        return taskList.toString();
+    }
+
     public String updateTaskField(Long chatId, int dbID, String field, String newValue) {
         if (!isTaskOwner(chatId, dbID)) {
             return "You are not the owner of this task.";

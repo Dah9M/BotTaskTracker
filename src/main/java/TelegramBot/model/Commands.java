@@ -53,15 +53,44 @@ public class Commands {
         });
 
         commandMap.put("View Tasks", () ->
-                messageSender.sendReplyMarkup(keyboard.setViewTasksKeyboard(), "Tasks:"));
-        commandMap.put("All Tasks", () ->
+                messageSender.sendReplyMarkup(keyboard.setViewTasksKeyboard(), "Select:"));
+
+        commandMap.put("By Status", () ->
+                messageSender.sendReplyMarkup(keyboard.setStatusKeyboard(), "Select Status:"));
+        commandMap.put("By Priority", () ->
+                messageSender.sendReplyMarkup(keyboard.setPriorityKeyboard(), "Select Priority:"));
+        commandMap.put("By Category", () ->
+                messageSender.sendReplyMarkup(keyboard.setCategoryKeyboard(), "Select Category:"));
+
+        // По статусу
+        commandMap.put("All By Status", () ->
                 taskController.viewTasksCommand("allTasks"));
-        commandMap.put("Waiting Tasks", () ->
+        commandMap.put("Waiting", () ->
                 taskController.viewTasksCommand("waitingTasks"));
-        commandMap.put("Active Tasks", () ->
+        commandMap.put("Active", () ->
                 taskController.viewTasksCommand("activeTasks"));
-        commandMap.put("Completed Tasks", () ->
+        commandMap.put("Completed", () ->
                 taskController.viewTasksCommand("completedTasks"));
+
+        // По категории
+        commandMap.put("Work", () ->
+                taskController.viewTasksByCategory("work"));
+        commandMap.put("Life", () ->
+                taskController.viewTasksByCategory("life"));
+        commandMap.put("Education", () ->
+                taskController.viewTasksByCategory("education"));
+        commandMap.put("All", () ->
+                taskController.viewTasksByCategory("all"));
+
+        // По приоритету
+        commandMap.put("Low", () ->
+                taskController.viewTasksByPriority("Low"));
+        commandMap.put("Medium", () ->
+                taskController.viewTasksByPriority("Medium"));
+        commandMap.put("High", () ->
+                taskController.viewTasksByPriority("High"));
+        commandMap.put("All", () ->
+                taskController.viewTasksByPriority("All"));
 
         // жоска обновляем таску (одну! выбранную!)
         commandMap.put("Update Task", () -> {

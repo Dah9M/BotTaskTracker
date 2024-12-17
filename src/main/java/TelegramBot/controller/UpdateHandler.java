@@ -1,7 +1,8 @@
-package TelegramBot.service;
+package TelegramBot.controller;
 
 import TelegramBot.model.BotUtils;
 import TelegramBot.model.Commands;
+import TelegramBot.service.MessageSender;
 import TelegramBot.task.TaskController;
 import TelegramBot.model.TaskPriority;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;

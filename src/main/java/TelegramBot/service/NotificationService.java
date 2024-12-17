@@ -1,9 +1,10 @@
-package TelegramBot.task;
+package TelegramBot.service;
 
 import TelegramBot.model.BotUtils;
 import TelegramBot.model.User;
 import TelegramBot.model.UserRepository;
-import TelegramBot.service.MessageSender;
+import TelegramBot.task.TaskData;
+import TelegramBot.task.TaskService;
 
 import java.time.Instant;
 import java.util.List;

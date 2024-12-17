@@ -14,6 +14,7 @@ public class Task {
     private TaskPriority priority;
     private String status = "Waiting";
     private Timestamp creationDate;
+    private String category = null;
     private boolean notified = false;
     private int deadlineNotificationCount = 0; // Новое поле
 

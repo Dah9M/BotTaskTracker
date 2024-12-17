@@ -1,7 +1,7 @@
 package TelegramBot.task;
 
 import TelegramBot.model.BotUtils;
-import TelegramBot.model.TaskPriority;
+import TelegramBot.service.NotificationService;
 import TelegramBot.task.utils.TaskBuilder;
 import TelegramBot.task.utils.TaskOperation;
 import TelegramBot.task.utils.TaskRemover;
@@ -55,6 +55,18 @@ public class TaskController {
     public void viewTasksCommand(String status) {
         chatId = botUtils.getMessageSender().getCurrentChatId();
         String tasks = taskService.getTasksByStatus(chatId, status);
+        botUtils.getMessageSender().sendMessage(tasks);
+    }
+
+    public void viewTasksByCategory(String category) {
+        chatId = botUtils.getMessageSender().getCurrentChatId();
+        String tasks = taskService.getTasksByCategory(chatId, category);
+        botUtils.getMessageSender().sendMessage(tasks);
+    }
+
+    public void viewTasksByPriority(String priority) {
+        chatId = botUtils.getMessageSender().getCurrentChatId();
+        String tasks = taskService.getTasksByPriority(chatId, priority);
         botUtils.getMessageSender().sendMessage(tasks);
     }
 
