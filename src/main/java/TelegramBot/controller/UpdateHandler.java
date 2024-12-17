@@ -28,9 +28,11 @@ public class UpdateHandler {
         messageSender.setCurrentChatId(currentChatId);
 
         if (taskController.isTaskInProgress()) {
-            if (taskController.isWaitingForPriorityInput()) { // метод добавляем в TaskController
+            if (taskController.isWaitingForPriorityInput()) {
                 if (!TaskPriority.isValidPriority(currentInput)) {
                     messageSender.sendMessage("Invalid priority. Please enter Low, Medium, or High.");
+                } else {
+                    messageSender.sendMessage(taskController.handleTaskInput(currentInput));
                 }
             } else {
                 messageSender.sendMessage(taskController.handleTaskInput(currentInput));

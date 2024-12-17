@@ -9,7 +9,7 @@ public class LoggerFactoryUtil {
     private static final Logger logger = LoggerFactory.getLogger("GlobalLogger");
 
     private LoggerFactoryUtil() {
-        // Приватный конструктор
+
     }
 
     public static void logInfo(String message, Object... args) {
