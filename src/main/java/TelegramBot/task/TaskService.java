@@ -12,10 +12,10 @@ import java.util.List;
 
 public class TaskService {
     private final TaskRepository database;
-
     public TaskService(TaskRepository database) {
         this.database = database;
     }
+
     public String addTask(Long chatId, String description, Timestamp deadline, String priority, Timestamp creationDate, int deadlineNotificationCount) {
         if (!TaskPriority.isValidPriority(priority)) {
             return "Invalid priority. Use Low, Medium, or High.";
@@ -35,19 +35,15 @@ public class TaskService {
         return tasks.stream().anyMatch(task -> task.getDbID() == dbID);
     }
 
-    public String getTasksByStatus(Long chatId, String status) {
+    public List<TaskData> getTasksByStatus(Long chatId, String status) {
         List<TaskData> tasks = database.getTasks(chatId, status);
         if (tasks.isEmpty()) {
-            return "No tasks found.";
+            throw new IllegalArgumentException("No tasks found for status " + status);
         }
-        StringBuilder taskList = new StringBuilder("Tasks:\n");
-        for (TaskData task : tasks) {
-            taskList.append(task.toString()).append("\n"); // Переопределите метод toString() в Task для форматирования
-        }
-        return taskList.toString();
+        return tasks;
     }
 
-    public String getTasksByCategory(Long chatId, String category) {
+    public List<TaskData> getTasksByCategory(Long chatId, String category) {
         List<TaskData> tasks;
         if ("all".equalsIgnoreCase(category)) {
             tasks = database.getTasks(chatId, "allTasks");
@@ -56,17 +52,13 @@ public class TaskService {
         }
 
         if (tasks.isEmpty()) {
-            return "No tasks found for category: " + category;
+            throw new IllegalArgumentException("No tasks found for category: " + category);
         }
 
-        StringBuilder taskList = new StringBuilder("Tasks in category '" + category + "':\n");
-        for (TaskData task : tasks) {
-            taskList.append(task.toString()).append("\n");
-        }
-        return taskList.toString();
+        return tasks;
     }
 
-    public String getTasksByPriority(Long chatId, String priority) {
+    public List<TaskData> getTasksByPriority(Long chatId, String priority) {
         List<TaskData> tasks;
         if ("All".equalsIgnoreCase(priority)) {
             tasks = database.getTasks(chatId, "allTasks");
@@ -75,14 +67,10 @@ public class TaskService {
         }
 
         if (tasks.isEmpty()) {
-            return "No tasks found with priority: " + priority;
+            throw new IllegalArgumentException("No tasks found for priority: " + priority);
         }
 
-        StringBuilder taskList = new StringBuilder("Tasks with priority '" + priority + "':\n");
-        for (TaskData task : tasks) {
-            taskList.append(task.toString()).append("\n");
-        }
-        return taskList.toString();
+        return tasks;
     }
 
     public String updateTaskField(Long chatId, int dbID, String field, String newValue) {

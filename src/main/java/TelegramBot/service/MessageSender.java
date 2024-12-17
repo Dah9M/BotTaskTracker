@@ -3,12 +3,15 @@ package TelegramBot.service;
 import TelegramBot.task.TaskData;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.text.StringSubstitutor;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // экземпляр бота передаётся только сюда
 
@@ -48,26 +51,44 @@ public class MessageSender {
     }
 
     public void sendTasks(List<TaskData> taskList) {
-        int number = 1;
-
         if (taskList.isEmpty()) {
             sendMessage("No tasks found.");
             return;
         }
 
+        int number = 1;
         StringBuilder messageBuilder = new StringBuilder("Your tasks:\n\n");
 
         for (TaskData task : taskList) {
-            messageBuilder.append(number).append("\n").append("  Description: ").append(task.getDescription()).append("\n")
-                    .append("  Deadline: ").append(task.getDeadline()).append("\n")
-                    .append("  Priority: ").append(task.getPriority()).append("\n")
-                    .append("  Status: ").append(task.getStatus()).append("\n")
-                    .append("  Created on: ").append(task.getCreationDate()).append("\n\n");
+            Map<String, String> valuesMap = new HashMap<>();
+            valuesMap.put("number", String.valueOf(number));
+            valuesMap.put("id", String.valueOf(task.getDbID()));
+            valuesMap.put("description", task.getDescription() != null ? task.getDescription() : "N/A");
+            valuesMap.put("deadline", task.getDeadline() != null ? String.valueOf(task.getDeadline()) : "N/A");
+            valuesMap.put("priority", task.getPriority() != null ? String.valueOf(task.getPriority()) : "N/A");
+            valuesMap.put("status", task.getStatus() != null ? task.getStatus() : "N/A");
+            valuesMap.put("creationDate", task.getCreationDate() != null ? String.valueOf(task.getCreationDate()) : "N/A");
+            valuesMap.put("category", task.getCategory() != null ? String.valueOf(task.getCategory()) : "Not Specified");
+
+            // Шаблон для вывода задачи
+            String template = """
+                    ${number}.
+                      📌 Task ID: ${id}
+                      📝 Description: ${description}
+                      ⏳ Deadline: ${deadline}
+                      🔥 Priority: ${priority}
+                      ✅ Status: ${status}
+                      📅 Created on: ${creationDate}
+                      🗂 Category: ${category}
+                    """;
+
+            StringSubstitutor substitutor = new StringSubstitutor(valuesMap);
+            messageBuilder.append(substitutor.replace(template)).append("\n");
+
             number++;
         }
 
         String message = messageBuilder.toString();
-
         if (message.length() > 4096) {
             sendLongMessage(message);
         } else {

@@ -54,20 +54,20 @@ public class TaskController {
     // Отображение всех задач с фильтрацией по статусу
     public void viewTasksCommand(String status) {
         chatId = botUtils.getMessageSender().getCurrentChatId();
-        String tasks = taskService.getTasksByStatus(chatId, status);
-        botUtils.getMessageSender().sendMessage(tasks);
+        List<TaskData> tasks = taskService.getTasksByStatus(chatId, status);
+        botUtils.getMessageSender().sendTasks(tasks);
     }
 
     public void viewTasksByCategory(String category) {
         chatId = botUtils.getMessageSender().getCurrentChatId();
-        String tasks = taskService.getTasksByCategory(chatId, category);
-        botUtils.getMessageSender().sendMessage(tasks);
+        List<TaskData> tasks = taskService.getTasksByCategory(chatId, category);
+        botUtils.getMessageSender().sendTasks(tasks);
     }
 
     public void viewTasksByPriority(String priority) {
         chatId = botUtils.getMessageSender().getCurrentChatId();
-        String tasks = taskService.getTasksByPriority(chatId, priority);
-        botUtils.getMessageSender().sendMessage(tasks);
+        List<TaskData> tasks = taskService.getTasksByPriority(chatId, priority);
+        botUtils.getMessageSender().sendTasks(tasks);
     }
 
     // Обработка пошагового ввода для добавления задачи
