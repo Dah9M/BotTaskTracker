@@ -1,24 +1,23 @@
 package TelegramBot.task.utils;
 
-import TelegramBot.model.TaskPriority;
 import TelegramBot.task.TaskData;
 import TelegramBot.task.TaskService;
-import TelegramBot.utils.LoggerFactoryUtil;
+import TelegramBot.model.TaskPriority;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
 import java.time.ZonedDateTime;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.ZoneId;
-import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TaskBuilder implements TaskOperation {
+    private static final Logger logger = LoggerFactory.getLogger(TaskBuilder.class);
     private final Map<Long, TaskData> taskDataMap = new HashMap<>();
     private final TaskService taskService;
-
-
 
     private static final ZoneId ZONE_UTC_PLUS_5 = ZoneId.of("UTC+05:00");
 
@@ -29,6 +28,7 @@ public class TaskBuilder implements TaskOperation {
     @Override
     public String startOperation(Long chatId) {
         taskDataMap.put(chatId, new TaskData(chatId));
+        logger.info("Пользователь {} начал процесс создания задачи.", chatId);
         return "Please provide a description for the task.";
     }
 
@@ -36,6 +36,7 @@ public class TaskBuilder implements TaskOperation {
     public String processInput(Long chatId, String input) {
         TaskData taskData = taskDataMap.get(chatId);
         if (taskData == null) {
+            logger.warn("Пользователь {} попытался ввести данные без инициализации процесса создания задачи.", chatId);
             return "Task creation process has not started. Please initiate by clicking 'Add Task'.";
         }
 
@@ -43,6 +44,7 @@ public class TaskBuilder implements TaskOperation {
             case 0:
                 taskData.setDescription(input);
                 taskData.nextStep();
+                logger.debug("Пользователь {} ввёл описание задачи: {}", chatId, input);
                 return "Please provide a deadline for the task (YYYY-MM-DD HH:MM:SS).";
 
             case 1:
@@ -52,27 +54,31 @@ public class TaskBuilder implements TaskOperation {
 
                     ZonedDateTime nowInZone = ZonedDateTime.now(ZONE_UTC_PLUS_5);
                     if (userDeadlineInZone.isBefore(nowInZone)) {
+                        logger.warn("Пользователь {} ввёл дедлайн в прошлом: {}", chatId, input);
                         return "The deadline is in the past. Please provide a future date and time.";
                     }
 
                     // Конвертация в Timestamp для сохранения
                     taskData.setDeadline(Timestamp.valueOf(userInputTime));
                     taskData.nextStep();
+                    logger.debug("Пользователь {} установил дедлайн задачи: {}", chatId, input);
                     return "Please provide a priority for the task (e.g., High, Medium, Low).";
 
                 } catch (Exception e) {
-                    LoggerFactoryUtil.logError("Неверное форматирование времени пользователем: {}", e, chatId);
+                    logger.error("Неверное форматирование времени пользователем {}: {}", chatId, input, e);
                     return "Invalid date format. Please use YYYY-MM-DD HH:MM:SS.";
                 }
 
             case 2:
                 if (!TaskPriority.isValidPriority(input)) {
+                    logger.warn("Пользователь {} ввёл некорректный приоритет: {}", chatId, input);
                     return "Invalid priority. Please enter one of the following: Low, Medium, High.";
                 }
 
                 taskData.setPriority(TaskPriority.valueOf(input.toUpperCase()).name());
                 taskData.setCreationDate(new Timestamp(System.currentTimeMillis()));
                 taskData.setDeadlineNotificationCount(0); // Инициализируем счетчик
+                logger.info("Пользователь {} установил приоритет задачи: {}", chatId, input);
 
                 String result = taskService.addTask(
                         taskData.getChatId(),
@@ -83,9 +89,11 @@ public class TaskBuilder implements TaskOperation {
                         taskData.getDeadlineNotificationCount()
                 );
                 taskDataMap.remove(chatId);
+                logger.info("Пользователь {} завершил процесс создания задачи: {}", chatId, result);
                 return result;
 
             default:
+                logger.warn("Пользователь {} ввёл неожиданный шаг процесса создания задачи: {}", chatId, taskData.getStep());
                 return "Unexpected input.";
         }
     }
@@ -93,11 +101,14 @@ public class TaskBuilder implements TaskOperation {
     @Override
     public void clearOperationData(Long chatId) {
         taskDataMap.remove(chatId);
+        logger.info("Данные процесса создания задачи для пользователя {} очищены.", chatId);
     }
 
     @Override
     public boolean isInProgress(Long chatId) {
-        return taskDataMap.containsKey(chatId);
+        boolean inProgress = taskDataMap.containsKey(chatId);
+        logger.debug("Проверка процесса создания задачи для пользователя {}: {}", chatId, inProgress);
+        return inProgress;
     }
 
     @Override

@@ -1,15 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- Консольный аппендер -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Шаблон вывода -->
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <logger name="GlobalLogger" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE" />
-    </logger>
-
-    <root level="WARN">
+    <!-- Уровень логирования для корневого логгера -->
+    <root level="DEBUG">
         <appender-ref ref="CONSOLE" />
     </root>
+
+    <!-- Пример настройки уровня логирования для определённого пакета -->
+    <logger name="TelegramBot" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
 </configuration>

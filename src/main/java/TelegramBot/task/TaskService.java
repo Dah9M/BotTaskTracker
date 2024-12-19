@@ -4,46 +4,52 @@ import TelegramBot.model.Task;
 import TelegramBot.model.TaskCategory;
 import TelegramBot.model.TaskPriority;
 import TelegramBot.model.TaskRepository;
-import TelegramBot.utils.LoggerFactoryUtil;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 
-
 public class TaskService {
+    private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
     private final TaskRepository database;
+
     public TaskService(TaskRepository database) {
         this.database = database;
     }
 
     public String addTask(Long chatId, String description, Timestamp deadline, String priority, Timestamp creationDate, int deadlineNotificationCount) {
         if (!TaskPriority.isValidPriority(priority)) {
+            logger.warn("Пользователь {} ввёл некорректный приоритет: {}", chatId, priority);
             return "Invalid priority. Use Low, Medium, or High.";
         }
 
         Task task = new Task(chatId, description, deadline, TaskPriority.valueOf(priority.toUpperCase()), creationDate, deadlineNotificationCount);
         try {
             database.addTask(task);
+            logger.info("Пользователь {} успешно добавил задачу: {}", chatId, description);
             return "Task added successfully!";
         } catch (SQLException e) {
-            LoggerFactoryUtil.logError("Ошибка при добавлении задачи для chatId: {}", e, chatId);
+            logger.error("Ошибка при добавлении задачи для chatId: {}", chatId, e);
             return "Error while adding task.";
         }
     }
 
     public boolean isTaskOwner(Long chatId, int dbID) {
         List<TaskData> tasks = database.getTasks(chatId, "allTasks");
-        return tasks.stream().anyMatch(task -> task.getDbID() == dbID);
+        boolean isOwner = tasks.stream().anyMatch(task -> task.getDbID() == dbID);
+        logger.debug("Проверка владения задачей ID {} пользователем {}: {}", dbID, chatId, isOwner);
+        return isOwner;
     }
 
     public List<TaskData> getTasksByStatus(Long chatId, String status) {
         List<TaskData> tasks = database.getTasks(chatId, status);
         if (tasks.isEmpty()) {
-            LoggerFactoryUtil.logError("Ошибка при получении задач по статусу для chatId: {}", new Exception("No tasks found"), chatId);
+            logger.error("Ошибка при получении задач по статусу для chatId: {}. Причина: No tasks found.", chatId);
             return Collections.emptyList();
         }
+        logger.info("Получено {} задач для chatId {} по статусу {}", tasks.size(), chatId, status);
         return tasks;
     }
 
@@ -56,10 +62,11 @@ public class TaskService {
         }
 
         if (tasks.isEmpty()) {
-            LoggerFactoryUtil.logError("Ошибка при получении задач по категории для chatId: {}", new Exception("No tasks found"), chatId);
-            throw new IllegalArgumentException("No tasks found for category: " + category);
+            logger.error("Ошибка при получении задач по категории для chatId: {}. Причина: No tasks found.", chatId);
+            return tasks;
         }
 
+        logger.info("Получено {} задач для chatId {} по категории {}", tasks.size(), chatId, category);
         return tasks;
     }
 
@@ -72,15 +79,17 @@ public class TaskService {
         }
 
         if (tasks.isEmpty()) {
-            LoggerFactoryUtil.logError("Ошибка при получении задач по приоритету для chatId: {}", new Exception("No tasks found"), chatId);
-            throw new IllegalArgumentException("No tasks found for priority: " + priority);
+            logger.error("Ошибка при получении задач по приоритету для chatId: {}. Причина: No tasks found.", chatId);
+            return tasks;
         }
 
+        logger.info("Получено {} задач для chatId {} по приоритету {}", tasks.size(), chatId, priority);
         return tasks;
     }
 
     public String updateTaskField(Long chatId, int dbID, String field, String newValue) {
         if (!isTaskOwner(chatId, dbID)) {
+            logger.warn("Пользователь {} попытался обновить задачу ID {}, которой он не владеет.", chatId, dbID);
             return "You are not the owner of this task.";
         }
 
@@ -93,54 +102,67 @@ public class TaskService {
                     .orElse(null);
 
             if (taskToUpdate == null) {
+                logger.warn("Задача ID {} не найдена для chatId {}", dbID, chatId);
                 return "Task ID not found.";
             }
 
             // Проверка и обновление поля задачи
             switch (field.toLowerCase()) {
                 case "description":
+                    logger.debug("Пользователь {} обновляет описание задачи ID {} на: {}", chatId, dbID, newValue);
                     return database.updateTaskField(dbID, field, newValue);
 
                 case "priority":
                     if (!TaskPriority.isValidPriority(newValue)) {
+                        logger.warn("Пользователь {} ввёл некорректный приоритет при обновлении задачи ID {}: {}", chatId, dbID, newValue);
                         return "Invalid priority. Please enter Low, Medium, or High.";
                     }
+                    logger.debug("Пользователь {} обновляет приоритет задачи ID {} на: {}", chatId, dbID, newValue);
                     return database.updateTaskField(dbID, field, TaskPriority.valueOf(newValue.toUpperCase()).name());
 
                 case "category":
                     if (!TaskCategory.isValidCategory(newValue)) {
+                        logger.warn("Пользователь {} ввёл некорректную категорию при обновлении задачи ID {}: {}", chatId, dbID, newValue);
                         return "Invalid category value.";
                     }
+                    logger.debug("Пользователь {} обновляет категорию задачи ID {} на: {}", chatId, dbID, newValue);
                     return database.updateTaskField(dbID, field, TaskCategory.valueOf(newValue.toUpperCase()).name());
-
 
                 case "deadline":
                     Timestamp deadline = Timestamp.valueOf(newValue);
+                    logger.debug("Пользователь {} обновляет дедлайн задачи ID {} на: {}", chatId, dbID, newValue);
                     return database.updateTaskField(dbID, field, deadline);
 
                 default:
+                    logger.warn("Пользователь {} попытался обновить некорректное поле '{}' задачи ID {}", chatId, field, dbID);
                     return "Invalid field. Only 'description', 'priority', 'category', or 'deadline' can be updated.";
             }
         } catch (IllegalArgumentException e) {
-            LoggerFactoryUtil.logError("Ошибка при попытке ввести дату неверного формата: {}", e, chatId);
+            logger.error("Ошибка при попытке ввести дату неверного формата пользователем {}: {}", chatId, newValue, e);
             return "Invalid input format. For deadline, use YYYY-MM-DD HH:MM:SS.";
         } catch (Exception e) {
-            LoggerFactoryUtil.logError("Ошибка при обновлении задачи: {}", e, chatId);
+            logger.error("Ошибка при обновлении задачи ID {} для chatId {}.", dbID, chatId, e);
             return "An error occurred while updating the task.";
         }
     }
 
-
     public String deleteTask(Long chatId, int dbId) {
         if (!isTaskOwner(chatId, dbId)) {
+            logger.warn("Пользователь {} попытался удалить задачу ID {}, которой он не владеет.", chatId, dbId);
             return "You are not the owner of this task.";
         }
 
         try {
             boolean success = database.deleteTask(dbId);
-            return success ? "Task deleted successfully!" : "Task not found.";
+            if (success) {
+                logger.info("Пользователь {} успешно удалил задачу ID {}.", chatId, dbId);
+                return "Task deleted successfully!";
+            } else {
+                logger.warn("Задача ID {} не найдена для удаления пользователем {}.", dbId, chatId);
+                return "Task not found.";
+            }
         } catch (SQLException e) {
-            LoggerFactoryUtil.logError("Ошибка при удалении задачи: {}", e, chatId);
+            logger.error("Ошибка при удалении задачи ID {} для chatId {}.", dbId, chatId, e);
             return "Error while deleting task.";
         }
     }
@@ -148,12 +170,21 @@ public class TaskService {
     // для получения инфы о тасках
     public List<TaskData> getTasks(Long chatId, String status) {
         if (chatId == null) {
-            LoggerFactoryUtil.logError("Ошибка при получении задач по приоритету для chatId: {}", new Exception("No tasks found"), chatId);
-
+            logger.error("Ошибка при получении задач по приоритету для chatId: {}. Причина: chatId is null.", chatId);
+            throw new IllegalArgumentException("Chat ID cannot be null");
         }
-        return database.getTasks(chatId, status);
+        List<TaskData> tasks = database.getTasks(chatId, status);
+        logger.info("Получено {} задач для chatId {} по статусу {}", tasks.size(), chatId, status);
+        return tasks;
     }
-    public void updateTaskNotificationCount(int taskId, int newCount) {
-        database.updateTaskNotificationCount(taskId, newCount);
+
+    public boolean updateTaskNotificationCount(int taskId, int newCount) {
+        boolean updated = database.updateTaskNotificationCount(taskId, newCount);
+        if (updated) {
+            logger.info("Обновлён deadlineNotificationCount для задачи ID {}: новый счётчик {}", taskId, newCount);
+        } else {
+            logger.warn("Не удалось обновить deadlineNotificationCount для задачи ID {}.", taskId);
+        }
+        return updated;
     }
 }

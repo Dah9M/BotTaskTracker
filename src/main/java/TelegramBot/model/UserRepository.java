@@ -1,16 +1,13 @@
 package TelegramBot.model;
 
-import TelegramBot.utils.LoggerFactoryUtil;
-
-import java.util.List; // Импорт списка
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.sql.*;
 import java.util.ArrayList;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
 
 public class UserRepository {
+    private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
     private final DatabaseConnector database;
 
     public UserRepository(DatabaseConnector database) {
@@ -22,9 +19,15 @@ public class UserRepository {
 
         try (Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, user.getChatId());
-            return statement.executeUpdate() > 0;
+            boolean success = statement.executeUpdate() > 0;
+            if (success) {
+                logger.info("Пользователь {} успешно зарегистрирован.", user.getChatId());
+            } else {
+                logger.warn("Не удалось зарегистрировать пользователя {}.", user.getChatId());
+            }
+            return success;
         } catch (SQLException e) {
-            LoggerFactoryUtil.logError("Ошибка при попытке регистрации пользователя: {}", e, user.getChatId());
+            logger.error("Ошибка при попытке регистрации пользователя: {}", user.getChatId(), e);
             return false;
         }
     }
@@ -41,8 +44,9 @@ public class UserRepository {
                 Long chatId = resultSet.getLong("chat_id");
                 users.add(new User(chatId));
             }
+            logger.info("Получено {} пользователей из базы данных.", users.size());
         } catch (SQLException e) {
-            LoggerFactoryUtil.logError("Ошибка при получении всех пользователей: {}", e);
+            logger.error("Ошибка при получении всех пользователей.", e);
         }
 
         return users;
@@ -56,15 +60,15 @@ public class UserRepository {
             ResultSet result = statement.executeQuery();
 
             if (result.next()) {
+                logger.info("Пользователь {} найден в базе данных.", chatId);
                 return new User(result.getLong("chat_id"));
             }
 
+            logger.warn("Пользователь {} не найден в базе данных.", chatId);
             return null;
         } catch (SQLException e) {
-            LoggerFactoryUtil.logError("Ошибка при получении по chatId пользователя: {}", e, chatId);
+            logger.error("Ошибка при получении пользователя по chatId: {}", chatId, e);
+            throw e;
         }
-        return null;
     }
 }
-
-

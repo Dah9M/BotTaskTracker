@@ -1,22 +1,22 @@
 package TelegramBot.service;
 
 import TelegramBot.task.TaskData;
-import TelegramBot.utils.LoggerFactoryUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.text.StringSubstitutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// экземпляр бота передаётся только сюда
-
+// Экземпляр бота передаётся только сюда
 public class MessageSender {
+    private static final Logger logger = LoggerFactory.getLogger(MessageSender.class);
     private final TelegramLongPollingBot bot;
     @Setter
     @Getter
@@ -34,7 +34,7 @@ public class MessageSender {
         try {
             bot.execute(sendMessage);
         } catch (TelegramApiException e) {
-            LoggerFactoryUtil.logError("Ошибка при попытке отправить сообщение: {}", e);
+            logger.error("Ошибка при попытке отправить сообщение: {}", message, e);
         }
     }
 
@@ -47,7 +47,7 @@ public class MessageSender {
         try {
             bot.execute(sendMessage);
         } catch (TelegramApiException e) {
-            LoggerFactoryUtil.logError("Ошибка при попытке отправить клавиатуру: {}", e);
+            logger.error("Ошибка при попытке отправить клавиатуру: {}", messageText, e);
         }
     }
 
@@ -67,7 +67,7 @@ public class MessageSender {
             valuesMap.put("description", task.getDescription() != null ? task.getDescription() : "N/A");
             valuesMap.put("deadline", task.getDeadline() != null ? String.valueOf(task.getDeadline()) : "N/A");
             valuesMap.put("priority", task.getPriority() != null ? String.valueOf(task.getPriority()) : "N/A");
-            valuesMap.put("status", task.getStatus() != null ? task.getStatus() : "N/A");
+            valuesMap.put("status", task.getStatus() != null ? String.valueOf(task.getStatus()) : "N/A");
             valuesMap.put("creationDate", task.getCreationDate() != null ? String.valueOf(task.getCreationDate()) : "N/A");
             valuesMap.put("category", task.getCategory() != null ? String.valueOf(task.getCategory()) : "Not Specified");
 
@@ -108,4 +108,3 @@ public class MessageSender {
         }
     }
 }
-

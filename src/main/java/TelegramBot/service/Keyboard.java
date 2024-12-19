@@ -50,9 +50,10 @@ public class Keyboard {
         KeyboardRow row1 = new KeyboardRow();
         row1.add("By Status");
         row1.add("By Priority");
+        row1.add("By Category");
 
         KeyboardRow row2 = new KeyboardRow();
-        row2.add("By Category");
+        row2.add("All");
 
         criteriaMenu.setKeyboard(Arrays.asList(row1, row2));
 
