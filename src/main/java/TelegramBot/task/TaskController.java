@@ -1,7 +1,6 @@
 package TelegramBot.task;
 
 import TelegramBot.model.BotUtils;
-import TelegramBot.service.Keyboard;
 import TelegramBot.service.NotificationService;
 import TelegramBot.task.utils.TaskBuilder;
 import TelegramBot.task.utils.TaskOperation;
@@ -69,7 +68,12 @@ public class TaskController {
     public void viewTasksByCategory(String category) {
         chatId = botUtils.getMessageSender().getCurrentChatId();
         List<TaskData> tasks = taskService.getTasksByCategory(chatId, category);
-        botUtils.getMessageSender().sendTasks(tasks);
+
+        if (tasks.isEmpty()) {
+            botUtils.getMessageSender().sendMessage("No tasks found.");
+        } else {
+            botUtils.getMessageSender().sendTasks(tasks);
+        }
 
         botUtils.getMessageSender().sendReplyMarkup(botUtils.getKeyboard().setMainKeyboard(), "Main menu:");
     }
@@ -77,7 +81,12 @@ public class TaskController {
     public void viewTasksByPriority(String priority) {
         chatId = botUtils.getMessageSender().getCurrentChatId();
         List<TaskData> tasks = taskService.getTasksByPriority(chatId, priority);
-        botUtils.getMessageSender().sendTasks(tasks);
+
+        if (tasks.isEmpty()) {
+            botUtils.getMessageSender().sendMessage("No tasks found.");
+        } else {
+            botUtils.getMessageSender().sendTasks(tasks);
+        }
 
         botUtils.getMessageSender().sendReplyMarkup(botUtils.getKeyboard().setMainKeyboard(), "Main menu:");
     }

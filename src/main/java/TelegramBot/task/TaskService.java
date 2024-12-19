@@ -57,7 +57,7 @@ public class TaskService {
 
         if (tasks.isEmpty()) {
             LoggerFactoryUtil.logError("Ошибка при получении задач по категории для chatId: {}", new Exception("No tasks found"), chatId);
-            throw new IllegalArgumentException("No tasks found for category: " + category);
+            return tasks;
         }
 
         return tasks;
@@ -73,7 +73,7 @@ public class TaskService {
 
         if (tasks.isEmpty()) {
             LoggerFactoryUtil.logError("Ошибка при получении задач по приоритету для chatId: {}", new Exception("No tasks found"), chatId);
-            throw new IllegalArgumentException("No tasks found for priority: " + priority);
+            return tasks;
         }
 
         return tasks;
