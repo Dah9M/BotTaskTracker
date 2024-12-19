@@ -49,13 +49,13 @@ public class TaskRepository {
             case "byCategory":
                 query = "SELECT * FROM tasks WHERE chat_id = ? AND category = ?";
                 break;
-            case "waitingTasks":
+            case "Waiting":
                 query = "SELECT * FROM tasks WHERE chat_id = ? AND status = 'Waiting'";
                 break;
-            case "activeTasks":
+            case "Active":
                 query = "SELECT * FROM tasks WHERE chat_id = ? AND status = 'Active'";
                 break;
-            case "completedTasks":
+            case "Completed":
                 query = "SELECT * FROM tasks WHERE chat_id = ? AND status = 'Completed'";
                 break;
             case "allTasks":

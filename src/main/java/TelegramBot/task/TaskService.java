@@ -8,6 +8,7 @@ import TelegramBot.utils.LoggerFactoryUtil;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -41,7 +42,7 @@ public class TaskService {
         List<TaskData> tasks = database.getTasks(chatId, status);
         if (tasks.isEmpty()) {
             LoggerFactoryUtil.logError("Ошибка при получении задач по статусу для chatId: {}", new Exception("No tasks found"), chatId);
-            throw new IllegalArgumentException("No tasks found for status " + status);
+            return Collections.emptyList();
         }
         return tasks;
     }

@@ -55,7 +55,12 @@ public class TaskController {
     public void viewTasksCommand(String status) {
         chatId = botUtils.getMessageSender().getCurrentChatId();
         List<TaskData> tasks = taskService.getTasksByStatus(chatId, status);
-        botUtils.getMessageSender().sendTasks(tasks);
+
+        if (tasks.isEmpty()) {
+            botUtils.getMessageSender().sendMessage("No tasks found.");
+        } else {
+            botUtils.getMessageSender().sendTasks(tasks);
+        }
     }
 
     public void viewTasksByCategory(String category) {

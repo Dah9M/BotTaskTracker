@@ -69,19 +69,19 @@ public class Commands {
         commandMap.put("All By Status", () ->
                 taskController.viewTasksCommand("allTasks"));
         commandMap.put("Waiting", () ->
-                taskController.viewTasksCommand("waitingTasks"));
+                taskController.viewTasksCommand("Waiting"));
         commandMap.put("Active", () ->
-                taskController.viewTasksCommand("activeTasks"));
+                taskController.viewTasksCommand("Active"));
         commandMap.put("Completed", () ->
-                taskController.viewTasksCommand("completedTasks"));
+                taskController.viewTasksCommand("Completed"));
 
         // По категории
         commandMap.put("Work", () ->
-                taskController.viewTasksByCategory("work"));
+                taskController.viewTasksByCategory("WORK"));
         commandMap.put("Life", () ->
-                taskController.viewTasksByCategory("life"));
+                taskController.viewTasksByCategory("LIFE"));
         commandMap.put("Education", () ->
-                taskController.viewTasksByCategory("education"));
+                taskController.viewTasksByCategory("EDUCATION"));
         commandMap.put("All", () ->
                 taskController.viewTasksByCategory("all"));
 
