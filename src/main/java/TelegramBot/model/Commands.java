@@ -1,15 +1,17 @@
 package TelegramBot.model;
 
+import TelegramBot.auth.AuthController;
 import TelegramBot.service.Keyboard;
 import TelegramBot.service.MessageSender;
 import TelegramBot.task.TaskController;
-import TelegramBot.utils.LoggerFactoryUtil;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Commands {
+    private static final Logger logger = LoggerFactory.getLogger(Commands.class);
     private static Commands instance;
     private final Map<String, Runnable> commandMap;
 
@@ -18,40 +20,47 @@ public class Commands {
         MessageSender messageSender = botUtils.getMessageSender();
         Keyboard keyboard = botUtils.getKeyboard();
         TaskController taskController = botUtils.getTaskController();
+        AuthController authController = botUtils.getAuthController();
 
         commandMap.put("/start", () -> {
             try {
-                if (botUtils.getAuthController().isUserRegistered(botUtils.getMessageSender().getCurrentChatId())) {
-                    // пользователь зареган, даем меню
+                if (authController.isUserRegistered(messageSender.getCurrentChatId())) {
+                    // Пользователь зареган, даем меню
                     messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Welcome back! Here is your main menu:");
+                    logger.info("Пользователь {} вернулся и получил главное меню.", messageSender.getCurrentChatId());
                 } else {
-                    // пользователь не зареган, даем регу
+                    // Пользователь не зареган, даем регистрацию
                     messageSender.sendReplyMarkup(keyboard.setStartKeyboard(), "Welcome! Please, register by clicking the button below.");
+                    logger.info("Пользователь {} не зарегистрирован и получил меню регистрации.", messageSender.getCurrentChatId());
                 }
             } catch (SQLException e) {
-                LoggerFactoryUtil.logError("Ошибка при проверке регистрации пользователя: {}", e, botUtils.getMessageSender().getCurrentChatId());
-
+                logger.error("Ошибка при проверке регистрации пользователя: {}", messageSender.getCurrentChatId(), e);
                 messageSender.sendMessage("An error occurred while checking registration status.");
             }
         });
+
         commandMap.put("/menu", () ->
                 messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Menu"));
+
         commandMap.put("Add Task", () -> {
             String response = taskController.addTaskCommand();
             messageSender.sendMessage(response);
+            logger.info("Пользователь {} инициировал добавление задачи.", messageSender.getCurrentChatId());
         });
 
         // Callback команды
         commandMap.put("Register", () -> {
-            // результат реги
-            String registrationMessage = botUtils.getAuthController().registerCommand(botUtils.getMessageSender().getCurrentChatId()).getText();
+            // Результат регистрации
+            String registrationMessage = authController.registerCommand(messageSender.getCurrentChatId()).getText();
 
-            // сообщение с регой
+            // Сообщение с регистрацией
             messageSender.sendMessage(registrationMessage);
+            logger.info("Пользователь {} получил сообщение о регистрации: {}", messageSender.getCurrentChatId(), registrationMessage);
 
-            // если успешная рега, даем менюшку
-            if (registrationMessage.equals("Registration successful!")) {
+            // Если успешная регистрация, даем меню
+            if ("Registration successful!".equals(registrationMessage)) {
                 messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Here is your main menu:");
+                logger.info("Пользователь {} успешно зарегистрирован и получил главное меню.", messageSender.getCurrentChatId());
             }
         });
 
@@ -97,35 +106,38 @@ public class Commands {
         commandMap.put("All", () ->
                 taskController.viewTasksByPriority("All"));
 
-        // жоска обновляем таску (одну! выбранную!)
+        // Обновление задачи (одну! выбранную!)
         commandMap.put("Update Task", () -> {
-            // проверка есть ли таски у типочка
+            // Проверка есть ли задачи у пользователя
             if (taskController.hasTasks()) {
                 taskController.viewTasksCommand("allTasks");
                 String response = taskController.updateTaskCommand();
                 messageSender.sendMessage(response);
+                logger.info("Пользователь {} начал процесс обновления задачи.", messageSender.getCurrentChatId());
             } else {
-                // тасок нет, пошел он на... со своими исправлениями
+                // Задач нет
                 messageSender.sendMessage("No tasks found.");
-                botUtils.getKeyboard().setMainKeyboard();
+                messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Main menu:");
+                logger.warn("Пользователь {} попытался обновить задачу, но задач нет.", messageSender.getCurrentChatId());
             }
         });
 
-        // удаление таски
+        // Удаление задачи
         commandMap.put("Delete Task", () -> {
-            // проверка, есть ли таски у типочка
+            // Проверка, есть ли задачи у пользователя
             if (taskController.hasTasks()) {
                 String response = taskController.deleteTaskCommand();
                 messageSender.sendMessage(response);
+                logger.info("Пользователь {} начал процесс удаления задачи.", messageSender.getCurrentChatId());
             } else {
-                // тасок нет, пошел он на... со своими удалениями
+                // Задач нет
                 messageSender.sendMessage("No tasks found.");
-                botUtils.getKeyboard().setMainKeyboard();
+                messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Main menu:");
+                logger.warn("Пользователь {} попытался удалить задачу, но задач нет.", messageSender.getCurrentChatId());
             }
         });
 
-
-        // помощь (тебе, немощному)
+        // Помощь
         commandMap.put("Help", () -> {
             String helpMessage = "Here is how you can use the bot:\n" +
                     "- Add Task: Add a new task.\n" +
@@ -133,9 +145,9 @@ public class Commands {
                     "- Delete Task: Remove a task.\n" +
                     "- View Tasks: View all your tasks.";
             messageSender.sendMessage(helpMessage);
-            botUtils.getKeyboard().setMainKeyboard();
+            messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Main menu:");
+            logger.info("Пользователь {} запросил помощь.", messageSender.getCurrentChatId());
         });
-
     }
 
     public static Commands getInstance(BotUtils botUtils) {
@@ -143,6 +155,7 @@ public class Commands {
             synchronized (Commands.class) {
                 if (instance == null) {
                     instance = new Commands(botUtils);
+                    logger.info("Экземпляр Commands создан.");
                 }
             }
         }
