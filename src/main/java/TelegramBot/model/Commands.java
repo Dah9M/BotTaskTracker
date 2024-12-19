@@ -64,6 +64,8 @@ public class Commands {
                 messageSender.sendReplyMarkup(keyboard.setPriorityKeyboard(), "Select Priority:"));
         commandMap.put("By Category", () ->
                 messageSender.sendReplyMarkup(keyboard.setCategoryKeyboard(), "Select Category:"));
+        commandMap.put("All", () ->
+                taskController.viewTasksCommand("allTasks"));
 
         // По статусу
         commandMap.put("All By Status", () ->

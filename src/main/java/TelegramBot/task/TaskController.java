@@ -59,29 +59,33 @@ public class TaskController {
 
         if (tasks.isEmpty()) {
             botUtils.getMessageSender().sendMessage("No tasks found.");
-            botUtils.getKeyboard().setMainKeyboard();
         } else {
             botUtils.getMessageSender().sendTasks(tasks);
         }
+
+        botUtils.getMessageSender().sendReplyMarkup(botUtils.getKeyboard().setMainKeyboard(), "Main menu:");
     }
 
     public void viewTasksByCategory(String category) {
         chatId = botUtils.getMessageSender().getCurrentChatId();
         List<TaskData> tasks = taskService.getTasksByCategory(chatId, category);
         botUtils.getMessageSender().sendTasks(tasks);
+
+        botUtils.getMessageSender().sendReplyMarkup(botUtils.getKeyboard().setMainKeyboard(), "Main menu:");
     }
 
     public void viewTasksByPriority(String priority) {
         chatId = botUtils.getMessageSender().getCurrentChatId();
         List<TaskData> tasks = taskService.getTasksByPriority(chatId, priority);
         botUtils.getMessageSender().sendTasks(tasks);
+
+        botUtils.getMessageSender().sendReplyMarkup(botUtils.getKeyboard().setMainKeyboard(), "Main menu:");
     }
 
     // Обработка пошагового ввода для добавления задачи
     public String handleTaskInput(String input) {
         TaskOperation taskBuilder = operations.get("create");
         chatId = botUtils.getMessageSender().getCurrentChatId();
-        botUtils.getKeyboard().setMainKeyboard();
         return taskBuilder.processInput(chatId, input);
     }
 
