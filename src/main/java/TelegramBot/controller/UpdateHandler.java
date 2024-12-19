@@ -51,12 +51,8 @@ public class UpdateHandler {
             }
 
         } else if (taskController.isDeleteInProgress()) {
-            if (!currentInput.matches("^\\d+$")) {
-                messageSender.sendMessage("Please enter a valid number.");
-            } else {
-                String response = taskController.handleDeleteInput(currentInput);
-                messageSender.sendMessage(response);
-            }
+            String response = taskController.handleDeleteInput(currentInput);
+            messageSender.sendMessage(response);
         } else {
             Runnable command = commands.getCommand(currentInput);
             if (command != null) {
