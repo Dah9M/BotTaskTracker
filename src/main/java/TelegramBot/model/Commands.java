@@ -105,6 +105,7 @@ public class Commands {
             } else {
                 // тасок нет, пошел он на... со своими исправлениями
                 messageSender.sendMessage("No tasks found.");
+                botUtils.getKeyboard().setMainKeyboard();
             }
         });
 
@@ -117,6 +118,7 @@ public class Commands {
             } else {
                 // тасок нет, пошел он на... со своими удалениями
                 messageSender.sendMessage("No tasks found.");
+                botUtils.getKeyboard().setMainKeyboard();
             }
         });
 
@@ -129,6 +131,7 @@ public class Commands {
                     "- Delete Task: Remove a task.\n" +
                     "- View Tasks: View all your tasks.";
             messageSender.sendMessage(helpMessage);
+            botUtils.getKeyboard().setMainKeyboard();
         });
 
     }

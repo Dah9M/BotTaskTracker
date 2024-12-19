@@ -1,6 +1,7 @@
 package TelegramBot.task;
 
 import TelegramBot.model.BotUtils;
+import TelegramBot.service.Keyboard;
 import TelegramBot.service.NotificationService;
 import TelegramBot.task.utils.TaskBuilder;
 import TelegramBot.task.utils.TaskOperation;
@@ -58,6 +59,7 @@ public class TaskController {
 
         if (tasks.isEmpty()) {
             botUtils.getMessageSender().sendMessage("No tasks found.");
+            botUtils.getKeyboard().setMainKeyboard();
         } else {
             botUtils.getMessageSender().sendTasks(tasks);
         }
@@ -79,6 +81,7 @@ public class TaskController {
     public String handleTaskInput(String input) {
         TaskOperation taskBuilder = operations.get("create");
         chatId = botUtils.getMessageSender().getCurrentChatId();
+        botUtils.getKeyboard().setMainKeyboard();
         return taskBuilder.processInput(chatId, input);
     }
 
@@ -86,6 +89,7 @@ public class TaskController {
     public String handleUpdateInput(String input) {
         TaskOperation taskUpdater = operations.get("update");
         chatId = botUtils.getMessageSender().getCurrentChatId();
+        botUtils.getKeyboard().setMainKeyboard();
         return taskUpdater.processInput(chatId, input);
     }
 
@@ -93,6 +97,7 @@ public class TaskController {
     public String handleDeleteInput(String input) {
         TaskOperation taskRemover = operations.get("delete");
         chatId = botUtils.getMessageSender().getCurrentChatId();
+        botUtils.getKeyboard().setMainKeyboard();
         return taskRemover.processInput(chatId, input);
     }
 

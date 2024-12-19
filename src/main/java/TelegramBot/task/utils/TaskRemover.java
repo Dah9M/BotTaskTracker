@@ -25,7 +25,7 @@ public class TaskRemover implements TaskOperation {
         TaskData taskData = taskDataMap.get(chatId);
         if (taskData == null) return "Task deletion not initiated.";
 
-        if (chatId.toString().matches("^\\d+$")) {
+        if (!chatId.toString().matches("^\\d+$")) {
             return "Please enter a valid number.";
         }
 
