@@ -29,7 +29,11 @@ public class TaskData {
     private boolean notified = false;
     private int deadlineNotificationCount = 0;
 
-    public TaskData(@NonNull int dbID, @NonNull Long chatId, @NonNull String description, @NonNull Timestamp deadline, TaskPriority priority, String status, Timestamp creationDate, int deadlineNotificationCount, TaskCategory category) {
+    public TaskData(@NonNull Long chatId) {
+        this.chatId = chatId;
+    }
+
+    public TaskData(int dbID, @NonNull Long chatId, @NonNull String description, Timestamp deadline, TaskPriority priority, String status, Timestamp creationDate, int deadlineNotificationCount, TaskCategory category) {
         this.dbID = dbID;
         this.chatId = chatId;
         this.description = description;
