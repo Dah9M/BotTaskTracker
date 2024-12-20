@@ -97,7 +97,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>TelegramBot.Main</mainClass>
+                            <mainClass>telegrambot.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

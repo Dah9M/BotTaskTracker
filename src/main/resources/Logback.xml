@@ -14,7 +14,7 @@
     </root>
 
     <!-- Пример настройки уровня логирования для определённого пакета -->
-    <logger name="TelegramBot" level="DEBUG" additivity="false">
+    <logger name="telegrambot" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE" />
     </logger>
 </configuration>
