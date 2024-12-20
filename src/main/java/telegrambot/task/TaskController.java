@@ -6,14 +6,13 @@ import telegrambot.task.utils.TaskBuilder;
 import telegrambot.task.utils.TaskOperation;
 import telegrambot.task.utils.TaskRemover;
 import telegrambot.task.utils.TaskUpdater;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class TaskController {
-    private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
     private final Map<String, TaskOperation> operations = new HashMap<>();
     private final TaskService taskService;
     private final NotificationService notificationService;
@@ -33,35 +32,35 @@ public class TaskController {
     public String addTaskCommand() {
         TaskOperation taskBuilder = operations.get("create");
         chatId = botUtils.getMessageSender().getCurrentChatId();
-        logger.info("Пользователь {} начал процесс добавления задачи.", chatId);
+        log.info("Пользователь {} начал процесс добавления задачи.", chatId);
         return taskBuilder.startOperation(chatId);
     }
 
     public String updateTaskCommand() {
         TaskOperation taskUpdater = operations.get("update");
         chatId = botUtils.getMessageSender().getCurrentChatId();
-        logger.info("Пользователь {} начал процесс обновления задачи.", chatId);
+        log.info("Пользователь {} начал процесс обновления задачи.", chatId);
         return taskUpdater.startOperation(chatId);
     }
 
     public String deleteTaskCommand() {
         TaskOperation taskRemover = operations.get("delete");
         chatId = botUtils.getMessageSender().getCurrentChatId();
-        logger.info("Пользователь {} начал процесс удаления задачи.", chatId);
+        log.info("Пользователь {} начал процесс удаления задачи.", chatId);
         return taskRemover.startOperation(chatId);
     }
 
     public void viewTasksCommand(String key) {
         chatId = botUtils.getMessageSender().getCurrentChatId();
         List<TaskData> tasks = taskService.getTasksByKey(chatId, key);
-        logger.info("Пользователь {} запросил просмотр задач по ключуу: {}", chatId, key);
+        log.info("Пользователь {} запросил просмотр задач по ключуу: {}", chatId, key);
 
         if (tasks.isEmpty()) {
             botUtils.getMessageSender().sendMessage("No tasks found.");
-            logger.warn("Для пользователя {} не найдено задач по ключу: {}", chatId, key);
+            log.warn("Для пользователя {} не найдено задач по ключу: {}", chatId, key);
         } else {
             botUtils.getMessageSender().sendTasks(tasks);
-            logger.info("Отправлено {} задач пользователю {} по ключу: {}", tasks.size(), chatId, key);
+            log.info("Отправлено {} задач пользователю {} по ключу: {}", tasks.size(), chatId, key);
         }
 
         botUtils.getMessageSender().sendReplyMarkup(botUtils.getKeyboard().setMainKeyboard(), "Main menu:");
@@ -70,7 +69,7 @@ public class TaskController {
     public String handleTaskInput(String input) {
         TaskOperation taskBuilder = operations.get("create");
         chatId = botUtils.getMessageSender().getCurrentChatId();
-        logger.info("Пользователь {} вводит данные для добавления задачи: {}", chatId, input);
+        log.info("Пользователь {} вводит данные для добавления задачи: {}", chatId, input);
         return taskBuilder.processInput(chatId, input);
     }
 
@@ -78,7 +77,7 @@ public class TaskController {
         TaskOperation taskUpdater = operations.get("update");
         chatId = botUtils.getMessageSender().getCurrentChatId();
         botUtils.getKeyboard().setMainKeyboard();
-        logger.info("Пользователь {} вводит данные для обновления задачи: {}", chatId, input);
+        log.info("Пользователь {} вводит данные для обновления задачи: {}", chatId, input);
         return taskUpdater.processInput(chatId, input);
     }
 
@@ -86,7 +85,7 @@ public class TaskController {
         TaskOperation taskRemover = operations.get("delete");
         chatId = botUtils.getMessageSender().getCurrentChatId();
         botUtils.getKeyboard().setMainKeyboard();
-        logger.info("Пользователь {} вводит данные для удаления задачи: {}", chatId, input);
+        log.info("Пользователь {} вводит данные для удаления задачи: {}", chatId, input);
         return taskRemover.processInput(chatId, input);
     }
 
@@ -94,7 +93,7 @@ public class TaskController {
         TaskOperation taskBuilder = operations.get("create");
         chatId = botUtils.getMessageSender().getCurrentChatId();
         boolean inProgress = taskBuilder.isInProgress(chatId);
-        logger.debug("Проверка процесса добавления задачи для пользователя {}: {}", chatId, inProgress);
+        log.debug("Проверка процесса добавления задачи для пользователя {}: {}", chatId, inProgress);
         return inProgress;
     }
 
@@ -102,7 +101,7 @@ public class TaskController {
         TaskOperation taskUpdater = operations.get("update");
         chatId = botUtils.getMessageSender().getCurrentChatId();
         boolean inProgress = taskUpdater.isInProgress(chatId);
-        logger.debug("Проверка процесса обновления задачи для пользователя {}: {}", chatId, inProgress);
+        log.debug("Проверка процесса обновления задачи для пользователя {}: {}", chatId, inProgress);
         return inProgress;
     }
 
@@ -110,14 +109,14 @@ public class TaskController {
         TaskOperation taskRemover = operations.get("delete");
         chatId = botUtils.getMessageSender().getCurrentChatId();
         boolean inProgress = taskRemover.isInProgress(chatId);
-        logger.debug("Проверка процесса удаления задачи для пользователя {}: {}", chatId, inProgress);
+        log.debug("Проверка процесса удаления задачи для пользователя {}: {}", chatId, inProgress);
         return inProgress;
     }
 
     public boolean hasTasks() {
         List<TaskData> tasks = taskService.getTasks(chatId, "allTasks");
         boolean hasTasks = !tasks.isEmpty();
-        logger.debug("Проверка наличия задач для пользователя {}: {}", chatId, hasTasks);
+        log.debug("Проверка наличия задач для пользователя {}: {}", chatId, hasTasks);
         return hasTasks;
     }
 
@@ -128,7 +127,7 @@ public class TaskController {
             TaskBuilder builder = (TaskBuilder) taskBuilder;
             TaskData taskData = builder.getTaskData(chatId);
             boolean waiting = taskData != null && taskData.getStep() == 2; // Шаг 2 — ввод приоритета
-            logger.debug("Проверка ожидания ввода приоритета для пользователя {}: {}", chatId, waiting);
+            log.debug("Проверка ожидания ввода приоритета для пользователя {}: {}", chatId, waiting);
             return waiting;
         }
         return false;
@@ -140,7 +139,7 @@ public class TaskController {
             TaskUpdater updater = (TaskUpdater) taskUpdater;
             TaskData taskData = updater.getTaskData(chatId);
             boolean waiting = taskData != null && "category".equalsIgnoreCase(taskData.getSelectedField());
-            logger.debug("Проверка ожидания ввода категории для пользователя {}: {}", chatId, waiting);
+            log.debug("Проверка ожидания ввода категории для пользователя {}: {}", chatId, waiting);
             return waiting;
         }
         return false;

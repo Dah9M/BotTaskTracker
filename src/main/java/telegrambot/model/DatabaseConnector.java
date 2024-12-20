@@ -1,14 +1,13 @@
 package telegrambot.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Slf4j
 public class DatabaseConnector {
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseConnector.class);
 
     private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
     private static final String URL = dotenv.get("DB_URL");
@@ -19,7 +18,7 @@ public class DatabaseConnector {
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
-            logger.error("Ошибка при попытке подключения к базе данных", e);
+            log.error("Ошибка при попытке подключения к базе данных", e);
             throw e;
         }
     }

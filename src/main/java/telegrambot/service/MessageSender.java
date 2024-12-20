@@ -1,11 +1,10 @@
 package telegrambot.service;
 
+import lombok.extern.slf4j.Slf4j;
 import telegrambot.task.TaskData;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.text.StringSubstitutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -14,9 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// Экземпляр бота передаётся только сюда
+@Slf4j
 public class MessageSender {
-    private static final Logger logger = LoggerFactory.getLogger(MessageSender.class);
     private final TelegramLongPollingBot bot;
     @Setter
     @Getter
@@ -34,7 +32,7 @@ public class MessageSender {
         try {
             bot.execute(sendMessage);
         } catch (TelegramApiException e) {
-            logger.error("Ошибка при попытке отправить сообщение: {}", message, e);
+            log.error("Ошибка при попытке отправить сообщение: {}", message, e);
         }
     }
 
@@ -47,7 +45,7 @@ public class MessageSender {
         try {
             bot.execute(sendMessage);
         } catch (TelegramApiException e) {
-            logger.error("Ошибка при попытке отправить клавиатуру: {}", messageText, e);
+            log.error("Ошибка при попытке отправить клавиатуру: {}", messageText, e);
         }
     }
 

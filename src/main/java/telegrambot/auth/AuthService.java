@@ -1,54 +1,54 @@
 package telegrambot.auth;
 
+import lombok.NonNull;
 import telegrambot.model.User;
 import telegrambot.model.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 
+@Slf4j
 public class AuthService {
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final UserRepository database;
 
     public AuthService(UserRepository database) {
         this.database = database;
     }
 
-    public String registerUser(Long chatId) {
+    public String registerUser(@NonNull Long chatId) {
         try {
             if (database.getUserByChatId(chatId) != null) {
-                logger.info("Пользователь {} уже зарегистрирован.", chatId);
+                log.info("Пользователь {} уже зарегистрирован.", chatId);
                 return "You've already registered.";
             }
 
             User user = new User(chatId);
             boolean success = database.registerUser(user);
             if (success) {
-                logger.info("Пользователь {} успешно зарегистрирован.", chatId);
+                log.info("Пользователь {} успешно зарегистрирован.", chatId);
                 return "Registration successful!";
             } else {
-                logger.warn("Не удалось зарегистрировать пользователя {}.", chatId);
+                log.warn("Не удалось зарегистрировать пользователя {}.", chatId);
                 return "Registration failed.";
             }
 
         } catch (SQLException e) {
-            logger.error("Ошибка при регистрации пользователя {}.", chatId, e);
+            log.error("Ошибка при регистрации пользователя {}.", chatId, e);
             return "Registration error.";
         }
     }
 
-    public User getUserByChatId(Long chatId) throws SQLException {
+    public User getUserByChatId(@NonNull Long chatId) throws SQLException {
         try {
             User user = database.getUserByChatId(chatId);
             if (user != null) {
-                logger.debug("Пользователь {} найден.", chatId);
+                log.debug("Пользователь {} найден.", chatId);
             } else {
-                logger.debug("Пользователь {} не найден.", chatId);
+                log.debug("Пользователь {} не найден.", chatId);
             }
             return user;
         } catch (SQLException e) {
-            logger.error("Ошибка при получении пользователя по chatId: {}", chatId, e);
+            log.error("Ошибка при получении пользователя по chatId: {}", chatId, e);
             throw e;
         }
     }

@@ -1,17 +1,17 @@
 package telegrambot.task.utils;
 
+import lombok.NonNull;
 import telegrambot.model.TaskCategory;
 import telegrambot.model.TaskPriority;
 import telegrambot.task.TaskData;
 import telegrambot.task.TaskService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class TaskUpdater implements TaskOperation {
-    private static final Logger logger = LoggerFactory.getLogger(TaskUpdater.class);
     private final Map<Long, TaskData> taskDataMap = new HashMap<>();
     private final TaskService taskService;
 
@@ -20,17 +20,17 @@ public class TaskUpdater implements TaskOperation {
     }
 
     @Override
-    public String startOperation(Long chatId) {
+    public String startOperation(@NonNull Long chatId) {
         taskDataMap.put(chatId, new TaskData(chatId));
-        logger.info("Пользователь {} начал процесс обновления задачи.", chatId);
+        log.info("Пользователь {} начал процесс обновления задачи.", chatId);
         return "Please provide the ID of the task you want to update.";
     }
 
     @Override
-    public String processInput(Long chatId, String input) {
+    public String processInput(@NonNull Long chatId, String input) {
         TaskData taskData = taskDataMap.get(chatId);
         if (taskData == null) {
-            logger.warn("Пользователь {} попытался обновить задачу без инициализации процесса.", chatId);
+            log.warn("Пользователь {} попытался обновить задачу без инициализации процесса.", chatId);
             return "Task update not initiated.";
         }
 
@@ -41,21 +41,21 @@ public class TaskUpdater implements TaskOperation {
                     taskData.setDbID(dbID);
                     if (!taskService.isTaskOwner(chatId, dbID)) {
                         taskDataMap.remove(chatId);
-                        logger.warn("Пользователь {} попытался обновить задачу с ID {}, которой он не владеет.", chatId, dbID);
+                        log.warn("Пользователь {} попытался обновить задачу с ID {}, которой он не владеет.", chatId, dbID);
                         return "You are not the owner of this task.";
                     }
                     taskData.nextStep();
-                    logger.debug("Пользователь {} выбрал задачу с ID {} для обновления.", chatId, dbID);
+                    log.debug("Пользователь {} выбрал задачу с ID {} для обновления.", chatId, dbID);
                     return "Please select the field to update: Description, Deadline, Category or Priority.";
                 } catch (NumberFormatException e) {
-                    logger.error("Пользователь {} ввёл некорректный ID задачи: {}", chatId, input, e);
+                    log.error("Пользователь {} ввёл некорректный ID задачи: {}", chatId, input, e);
                     return "Invalid task ID format. Please enter a numeric ID.";
                 }
 
             case 1:
                 taskData.setSelectedField(input.toLowerCase());
                 taskData.nextStep();
-                logger.debug("Пользователь {} выбрал поле '{}' для обновления.", chatId, input);
+                log.debug("Пользователь {} выбрал поле '{}' для обновления.", chatId, input);
                 switch (input.toLowerCase()) {
                     case "description":
                         return "Please enter the new description for the task.";
@@ -66,7 +66,7 @@ public class TaskUpdater implements TaskOperation {
                     case "priority":
                         return "Please enter the new priority for the task (Low, Medium, High).";
                     default:
-                        logger.warn("Пользователь {} выбрал некорректное поле '{}'.", chatId, input);
+                        log.warn("Пользователь {} выбрал некорректное поле '{}'.", chatId, input);
                         return "Invalid field. Please choose from Description, Deadline, Category, or Priority.";
                 }
 
@@ -82,55 +82,55 @@ public class TaskUpdater implements TaskOperation {
                         try {
                             newValue = input;
                         } catch (Exception e) {
-                            logger.error("Пользователь {} ввёл неверный формат дедлайна: {}", chatId, input, e);
+                            log.error("Пользователь {} ввёл неверный формат дедлайна: {}", chatId, input, e);
                             return "Invalid date format. Please use YYYY-MM-DD HH:MM:SS.";
                         }
                         break;
                     case "category":
                         if (!TaskCategory.isValidCategory(input)) {
-                            logger.warn("Пользователь {} ввёл некорректную категорию: {}", chatId, input);
+                            log.warn("Пользователь {} ввёл некорректную категорию: {}", chatId, input);
                             return "Invalid category. Please enter Work, Life, or Education.";
                         }
                         newValue = TaskCategory.valueOf(input.toUpperCase()).name();
                         break;
                     case "priority":
                         if (!TaskPriority.isValidPriority(input)) {
-                            logger.warn("Пользователь {} ввёл некорректный приоритет: {}", chatId, input);
+                            log.warn("Пользователь {} ввёл некорректный приоритет: {}", chatId, input);
                             return "Invalid priority. Please enter Low, Medium, or High.";
                         }
                         newValue = TaskPriority.valueOf(input.toUpperCase()).name();
                         break;
                     default:
-                        logger.warn("Пользователь {} выбрал некорректное поле '{}'.", chatId, selectedField);
+                        log.warn("Пользователь {} выбрал некорректное поле '{}'.", chatId, selectedField);
                         return "Invalid field selected.";
                 }
 
                 String result = taskService.updateTaskField(chatId, taskData.getDbID(), selectedField, newValue);
                 taskDataMap.remove(chatId);
-                logger.info("Пользователь {} завершил обновление задачи с ID {}: {}", chatId, taskData.getDbID(), result);
+                log.info("Пользователь {} завершил обновление задачи с ID {}: {}", chatId, taskData.getDbID(), result);
                 return result;
 
             default:
-                logger.warn("Пользователь {} ввёл неожиданный шаг процесса обновления задачи: {}", chatId, taskData.getStep());
+                log.warn("Пользователь {} ввёл неожиданный шаг процесса обновления задачи: {}", chatId, taskData.getStep());
                 return "Unexpected input.";
         }
     }
 
     @Override
-    public void clearOperationData(Long chatId) {
+    public void clearOperationData(@NonNull Long chatId) {
         taskDataMap.remove(chatId);
-        logger.info("Данные процесса обновления задачи для пользователя {} очищены.", chatId);
+        log.info("Данные процесса обновления задачи для пользователя {} очищены.", chatId);
     }
 
     @Override
-    public boolean isInProgress(Long chatId) {
+    public boolean isInProgress(@NonNull Long chatId) {
         boolean inProgress = taskDataMap.containsKey(chatId);
-        logger.debug("Проверка процесса обновления задачи для пользователя {}: {}", chatId, inProgress);
+        log.debug("Проверка процесса обновления задачи для пользователя {}: {}", chatId, inProgress);
         return inProgress;
     }
 
     @Override
-    public TaskData getTaskData(Long chatId) {
+    public TaskData getTaskData(@NonNull Long chatId) {
         return taskDataMap.get(chatId);
     }
 }

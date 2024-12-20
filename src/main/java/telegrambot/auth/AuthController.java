@@ -1,31 +1,31 @@
 package telegrambot.auth;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import java.sql.SQLException;
 
+@Slf4j
 public class AuthController {
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
 
-    public SendMessage registerCommand(Long chatId) {
+    public SendMessage registerCommand(@NonNull Long chatId) {
         String message = authService.registerUser(chatId);
-        logger.info("Пользователь {} зарегистрирован: {}", chatId, message);
+        log.info("Пользователь {} зарегистрирован: {}", chatId, message);
         return new SendMessage(String.valueOf(chatId), message);
     }
 
-    public boolean isUserRegistered(Long chatId) throws SQLException {
+    public boolean isUserRegistered(@NonNull Long chatId) throws SQLException {
         try {
             boolean registered = authService.getUserByChatId(chatId) != null;
-            logger.debug("Проверка регистрации пользователя {}: {}", chatId, registered);
+            log.debug("Проверка регистрации пользователя {}: {}", chatId, registered);
             return registered;
         } catch (SQLException e) {
-            logger.error("Ошибка при проверке регистрации пользователя {}", chatId, e);
+            log.error("Ошибка при проверке регистрации пользователя {}", chatId, e);
             throw e;
         }
     }

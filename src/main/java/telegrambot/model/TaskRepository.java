@@ -1,23 +1,24 @@
 package telegrambot.model;
 
+import lombok.NonNull;
 import telegrambot.task.TaskData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Slf4j
 public class TaskRepository {
-    private static final Logger logger = LoggerFactory.getLogger(TaskRepository.class);
     private final DatabaseConnector database;
 
     public TaskRepository(DatabaseConnector database) {
         this.database = database;
     }
 
-    public boolean addTask(Task task) throws SQLException {
+    public boolean addTask(@NonNull Task task) throws SQLException {
         String query = "INSERT INTO tasks (chat_id, description, deadline, priority, status, creation_date, notified, deadline_notification_count, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(query)) {
@@ -33,14 +34,14 @@ public class TaskRepository {
 
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.error("Ошибка при добавлении задачи пользователя: {}", task.getChatId(), e);
+            log.error("Ошибка при добавлении задачи пользователя: {}", task.getChatId(), e);
             return false;
         }
     }
 
-    public List<TaskData> getTasks(Long chatId, String key) {
+    public List<TaskData> getTasks(@NonNull Long chatId, String key) {
         if (chatId == null) {
-            logger.error("Ошибка при получении задач пользователя, chatId = null");
+            log.error("Ошибка при получении задач пользователя, chatId = null");
             throw new IllegalArgumentException("Chat ID cannot be null");
         }
 
@@ -100,7 +101,7 @@ public class TaskRepository {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Ошибка при получении задач пользователя: {}", chatId, e);
+            log.error("Ошибка при получении задач пользователя: {}", chatId, e);
         }
 
         return tasks;
@@ -118,7 +119,7 @@ public class TaskRepository {
 
             return rowsUpdated > 0;
         } catch (SQLException e) {
-            logger.error("Ошибка при обновлении notificationCount задачи: {}", taskId, e);
+            log.error("Ошибка при обновлении notificationCount задачи: {}", taskId, e);
             return false;
         }
     }
@@ -136,7 +137,7 @@ public class TaskRepository {
             } else if (newValue instanceof TaskCategory) {
                 statement.setString(1, ((TaskCategory) newValue).name());
             } else {
-                logger.warn("Unsupported data type for field update: {}", newValue.getClass().getName());
+                log.warn("Unsupported data type for field update: {}", newValue.getClass().getName());
                 return "Unsupported data type for field update.";
             }
 
@@ -144,7 +145,7 @@ public class TaskRepository {
             statement.executeUpdate();
             return fieldName + " updated successfully.";
         } catch (SQLException e) {
-            logger.error("Ошибка при обновлении задачи: {}", id, e);
+            log.error("Ошибка при обновлении задачи: {}", id, e);
             return "Error updating " + fieldName + ".";
         }
     }
@@ -157,7 +158,7 @@ public class TaskRepository {
             statement.setLong(1, taskId);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.error("Ошибка при удалении задачи: {}", taskId, e);
+            log.error("Ошибка при удалении задачи: {}", taskId, e);
             return false;
         }
     }

@@ -1,5 +1,7 @@
 package telegrambot.task;
 
+import lombok.NonNull;
+import lombok.ToString;
 import telegrambot.model.TaskCategory;
 import telegrambot.model.TaskPriority;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import java.sql.Timestamp;
 
 @Setter
 @Getter
+@ToString
 public class TaskData {
     private int dbID;
     private long chatId;
@@ -26,11 +29,7 @@ public class TaskData {
     private boolean notified = false;
     private int deadlineNotificationCount = 0;
 
-    public TaskData(Long chatId) {
-        this.chatId = chatId;
-    }
-
-    public TaskData(int dbID, Long chatId, String description, Timestamp deadline, TaskPriority priority, String status, Timestamp creationDate, int deadlineNotificationCount, TaskCategory category) {
+    public TaskData(@NonNull int dbID, @NonNull Long chatId, @NonNull String description, @NonNull Timestamp deadline, TaskPriority priority, String status, Timestamp creationDate, int deadlineNotificationCount, TaskCategory category) {
         this.dbID = dbID;
         this.chatId = chatId;
         this.description = description;
@@ -60,16 +59,5 @@ public class TaskData {
 
     public void nextStep() {
         step++;
-    }
-
-    @Override
-    public String toString() {
-        return "Task ID: " + dbID +
-                "\nDescription: " + description +
-                "\nDeadline: " + (deadline != null ? deadline.toString() : "No deadline set") +
-                "\nPriority: " + priority +
-                "\nStatus: " + status +
-                "\nCreation Date: " + creationDate +
-                "\nCategory: " + category;
     }
 }

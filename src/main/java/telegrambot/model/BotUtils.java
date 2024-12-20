@@ -8,6 +8,8 @@ import telegrambot.task.TaskController;
 import telegrambot.task.TaskService;
 import lombok.Getter;
 
+import javax.inject.Singleton;
+
 @Getter
 public class BotUtils {
     private static BotUtils instance;

@@ -1,12 +1,15 @@
 package telegrambot.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.sql.Timestamp;
 
 @Setter
 @Getter
+@AllArgsConstructor
 public class Task {
     private Long chatId;
     private String description;
@@ -14,11 +17,12 @@ public class Task {
     private TaskPriority priority;
     private String status = "Waiting";
     private Timestamp creationDate;
-    private TaskCategory category = null;
+    private TaskCategory category;
     private boolean notified = false;
     private int deadlineNotificationCount = 0;
 
-    public Task(Long chatId, String description, Timestamp deadline, TaskPriority priority, Timestamp creationDate, int deadlineNotificationCount, TaskCategory category) {
+    public Task(@NonNull Long chatId, @NonNull String description, @NonNull Timestamp deadline, @NonNull TaskPriority priority,
+                Timestamp creationDate, int deadlineNotificationCount, TaskCategory category) {
         this.chatId = chatId;
         this.description = description;
         this.deadline = deadline;

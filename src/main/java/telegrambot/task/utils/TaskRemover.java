@@ -1,15 +1,15 @@
 package telegrambot.task.utils;
 
+import lombok.NonNull;
 import telegrambot.task.TaskData;
 import telegrambot.task.TaskService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class TaskRemover implements TaskOperation {
-    private static final Logger logger = LoggerFactory.getLogger(TaskRemover.class);
     private final Map<Long, TaskData> taskDataMap = new HashMap<>();
     private final TaskService taskService;
 
@@ -18,22 +18,22 @@ public class TaskRemover implements TaskOperation {
     }
 
     @Override
-    public String startOperation(Long chatId) {
+    public String startOperation(@NonNull Long chatId) {
         taskDataMap.put(chatId, new TaskData(chatId));
-        logger.info("Пользователь {} начал процесс удаления задачи.", chatId);
+        log.info("Пользователь {} начал процесс удаления задачи.", chatId);
         return "Please provide the ID of the task you want to delete.";
     }
 
     @Override
-    public String processInput(Long chatId, String input) {
+    public String processInput(@NonNull Long chatId, String input) {
         TaskData taskData = taskDataMap.get(chatId);
         if (taskData == null) {
-            logger.warn("Пользователь {} попытался удалить задачу без инициализации процесса.", chatId);
+            log.warn("Пользователь {} попытался удалить задачу без инициализации процесса.", chatId);
             return "Task deletion not initiated.";
         }
 
         if (!chatId.toString().matches("^\\d+$")) {
-            logger.warn("Пользователь {} ввёл некорректный ID задачи для удаления: {}", chatId, input);
+            log.warn("Пользователь {} ввёл некорректный ID задачи для удаления: {}", chatId, input);
             return "Please enter a valid number.";
         }
 
@@ -45,48 +45,48 @@ public class TaskRemover implements TaskOperation {
 
                 if (!taskService.isTaskOwner(chatId, dbID)) {
                     taskDataMap.remove(chatId);
-                    logger.warn("Пользователь {} попытался удалить задачу с ID {}, которой он не владеет.", chatId, dbID);
+                    log.warn("Пользователь {} попытался удалить задачу с ID {}, которой он не владеет.", chatId, dbID);
                     return "You are not the owner of this task.";
                 }
 
-                logger.debug("Пользователь {} выбрал задачу с ID {} для удаления.", chatId, dbID);
+                log.debug("Пользователь {} выбрал задачу с ID {} для удаления.", chatId, dbID);
                 return "Are you sure you want to delete this task? Type 'yes' to confirm or 'no' to cancel.";
             } catch (NumberFormatException e) {
-                logger.error("Пользователь {} ввёл некорректный формат ID задачи: {}", chatId, input, e);
+                log.error("Пользователь {} ввёл некорректный формат ID задачи: {}", chatId, input, e);
                 return "Invalid task ID format. Please enter a numeric ID.";
             }
         } else if (taskData.getStep() == 1) {
             if ("yes".equalsIgnoreCase(input)) {
                 String result = taskService.deleteTask(chatId, taskData.getDbID());
                 taskDataMap.remove(chatId);
-                logger.info("Пользователь {} подтвердил удаление задачи с ID {}: {}", chatId, taskData.getDbID(), result);
+                log.info("Пользователь {} подтвердил удаление задачи с ID {}: {}", chatId, taskData.getDbID(), result);
                 return result;
             } else {
                 taskDataMap.remove(chatId);
-                logger.info("Пользователь {} отменил удаление задачи.", chatId);
+                log.info("Пользователь {} отменил удаление задачи.", chatId);
                 return "Task deletion canceled.";
             }
         } else {
-            logger.warn("Пользователь {} ввёл неожиданный шаг процесса удаления задачи: {}", chatId, taskData.getStep());
+            log.warn("Пользователь {} ввёл неожиданный шаг процесса удаления задачи: {}", chatId, taskData.getStep());
             return "Unexpected input.";
         }
     }
 
     @Override
-    public void clearOperationData(Long chatId) {
+    public void clearOperationData(@NonNull Long chatId) {
         taskDataMap.remove(chatId);
-        logger.info("Данные процесса удаления задачи для пользователя {} очищены.", chatId);
+        log.info("Данные процесса удаления задачи для пользователя {} очищены.", chatId);
     }
 
     @Override
-    public boolean isInProgress(Long chatId) {
+    public boolean isInProgress(@NonNull Long chatId) {
         boolean inProgress = taskDataMap.containsKey(chatId);
-        logger.debug("Проверка процесса удаления задачи для пользователя {}: {}", chatId, inProgress);
+        log.debug("Проверка процесса удаления задачи для пользователя {}: {}", chatId, inProgress);
         return inProgress;
     }
 
     @Override
-    public TaskData getTaskData(Long chatId) {
+    public TaskData getTaskData(@NonNull Long chatId) {
         return taskDataMap.get(chatId);
     }
 }

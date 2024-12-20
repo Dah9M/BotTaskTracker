@@ -4,15 +4,14 @@ import telegrambot.auth.AuthController;
 import telegrambot.service.Keyboard;
 import telegrambot.service.MessageSender;
 import telegrambot.task.TaskController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class Commands {
-    private static final Logger logger = LoggerFactory.getLogger(Commands.class);
     private static Commands instance;
     private final Map<String, Runnable> commandMap;
 
@@ -27,13 +26,13 @@ public class Commands {
             try {
                 if (authController.isUserRegistered(messageSender.getCurrentChatId())) {
                     messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Welcome back! Here is your main menu:");
-                    logger.info("Пользователь {} вернулся и получил главное меню.", messageSender.getCurrentChatId());
+                    log.info("Пользователь {} вернулся и получил главное меню.", messageSender.getCurrentChatId());
                 } else {
                     messageSender.sendReplyMarkup(keyboard.setStartKeyboard(), "Welcome! Please, register by clicking the button below.");
-                    logger.info("Пользователь {} не зарегистрирован и получил меню регистрации.", messageSender.getCurrentChatId());
+                    log.info("Пользователь {} не зарегистрирован и получил меню регистрации.", messageSender.getCurrentChatId());
                 }
             } catch (SQLException e) {
-                logger.error("Ошибка при проверке регистрации пользователя: {}", messageSender.getCurrentChatId(), e);
+                log.error("Ошибка при проверке регистрации пользователя: {}", messageSender.getCurrentChatId(), e);
                 messageSender.sendMessage("An error occurred while checking registration status.");
             }
         });
@@ -44,7 +43,7 @@ public class Commands {
         commandMap.put("Add Task", () -> {
             String response = taskController.addTaskCommand();
             messageSender.sendMessage(response);
-            logger.info("Пользователь {} инициировал добавление задачи.", messageSender.getCurrentChatId());
+            log.info("Пользователь {} инициировал добавление задачи.", messageSender.getCurrentChatId());
         });
 
         // Callback команды
@@ -52,11 +51,11 @@ public class Commands {
             String registrationMessage = authController.registerCommand(messageSender.getCurrentChatId()).getText();
 
             messageSender.sendMessage(registrationMessage);
-            logger.info("Пользователь {} получил сообщение о регистрации: {}", messageSender.getCurrentChatId(), registrationMessage);
+            log.info("Пользователь {} получил сообщение о регистрации: {}", messageSender.getCurrentChatId(), registrationMessage);
 
             if ("Registration successful!".equals(registrationMessage)) {
                 messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Here is your main menu:");
-                logger.info("Пользователь {} успешно зарегистрирован и получил главное меню.", messageSender.getCurrentChatId());
+                log.info("Пользователь {} успешно зарегистрирован и получил главное меню.", messageSender.getCurrentChatId());
             }
         });
 
@@ -103,11 +102,11 @@ public class Commands {
                 taskController.viewTasksCommand("allTasks");
                 String response = taskController.updateTaskCommand();
                 messageSender.sendMessage(response);
-                logger.info("Пользователь {} начал процесс обновления задачи.", messageSender.getCurrentChatId());
+                log.info("Пользователь {} начал процесс обновления задачи.", messageSender.getCurrentChatId());
             } else {
                 messageSender.sendMessage("No tasks found.");
                 messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Main menu:");
-                logger.warn("Пользователь {} попытался обновить задачу, но задач нет.", messageSender.getCurrentChatId());
+                log.warn("Пользователь {} попытался обновить задачу, но задач нет.", messageSender.getCurrentChatId());
             }
         });
 
@@ -115,11 +114,11 @@ public class Commands {
             if (taskController.hasTasks()) {
                 String response = taskController.deleteTaskCommand();
                 messageSender.sendMessage(response);
-                logger.info("Пользователь {} начал процесс удаления задачи.", messageSender.getCurrentChatId());
+                log.info("Пользователь {} начал процесс удаления задачи.", messageSender.getCurrentChatId());
             } else {
                 messageSender.sendMessage("No tasks found.");
                 messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Main menu:");
-                logger.warn("Пользователь {} попытался удалить задачу, но задач нет.", messageSender.getCurrentChatId());
+                log.warn("Пользователь {} попытался удалить задачу, но задач нет.", messageSender.getCurrentChatId());
             }
         });
 
@@ -131,7 +130,7 @@ public class Commands {
                     "- View Tasks: View all your tasks.";
             messageSender.sendMessage(helpMessage);
             messageSender.sendReplyMarkup(keyboard.setMainKeyboard(), "Main menu:");
-            logger.info("Пользователь {} запросил помощь.", messageSender.getCurrentChatId());
+            log.info("Пользователь {} запросил помощь.", messageSender.getCurrentChatId());
         });
 
     }
@@ -141,7 +140,7 @@ public class Commands {
             synchronized (Commands.class) {
                 if (instance == null) {
                     instance = new Commands(botUtils);
-                    logger.info("Экземпляр Commands создан.");
+                    log.info("Экземпляр Commands создан.");
                 }
             }
         }

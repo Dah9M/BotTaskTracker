@@ -5,16 +5,15 @@ import telegrambot.model.User;
 import telegrambot.model.UserRepository;
 import telegrambot.task.TaskData;
 import telegrambot.task.TaskService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+@Slf4j
 public class NotificationService {
-    private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
     private final TaskService taskService;
     private final MessageSender messageSender;
     private final UserRepository userRepository;
@@ -35,7 +34,7 @@ public class NotificationService {
                 sendNotifications();
             }
         }, 0, 60 * 1000);
-        logger.info("Планировщик уведомлений запущен.");
+        log.info("Планировщик уведомлений запущен.");
     }
 
     private void sendNotifications() {
@@ -56,7 +55,7 @@ public class NotificationService {
                     if (timeLeft > 0 && timeLeft <= 10 * 60 * 1000) {
                         messageSender.setCurrentChatId(task.getChatId());
                         messageSender.sendMessage("⏰ Напоминание! До дедлайна задачи '" + task.getDescription() + "' осталось менее 10 минут!");
-                        logger.info("Отправлено напоминание о задаче {} пользователю {}.", task.getDescription(), chatId);
+                        log.info("Отправлено напоминание о задаче {} пользователю {}.", task.getDescription(), chatId);
                     } else if (timeLeft <= 0) {
                         if (task.getDeadlineNotificationCount() < 3) {
                             messageSender.setCurrentChatId(task.getChatId());
@@ -65,15 +64,15 @@ public class NotificationService {
 
                             boolean updated = taskService.updateTaskNotificationCount(task.getDbID(), task.getDeadlineNotificationCount());
                             if (updated) {
-                                logger.info("Обновлён счетчик уведомлений для задачи {} пользователя {}.", task.getDbID(), chatId);
+                                log.info("Обновлён счетчик уведомлений для задачи {} пользователя {}.", task.getDbID(), chatId);
                             } else {
-                                logger.warn("Не удалось обновить счетчик уведомлений для задачи {} пользователя {}.", task.getDbID(), chatId);
+                                log.warn("Не удалось обновить счетчик уведомлений для задачи {} пользователя {}.", task.getDbID(), chatId);
                             }
                         }
                     }
                 }
             } catch (Exception e) {
-                logger.error("Ошибка при отправке уведомлений для chatId: {}", chatId, e);
+                log.error("Ошибка при отправке уведомлений для chatId: {}", chatId, e);
             }
         }
     }
